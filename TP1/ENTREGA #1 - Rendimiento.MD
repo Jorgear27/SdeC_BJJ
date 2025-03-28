@@ -21,3 +21,9 @@ _jose.lopez.sivilat@mi.unc.edu.ar_;
 
 ---
 
+# Introducción
+
+El siguiente informe tiene como objetivo analizar y responder una serie de preguntas relacionadas con el uso de benchmarks y el rendimiento de procesadores en tareas específicas. A través de este análisis, se busca comprender cómo los benchmarks pueden ser herramientas útiles para medir y optimizar las tareas diarias, así como evaluar el desempeño de diferentes procesadores en la compilación del kernel de Linux. Además, se incluirán capturas de pantalla como evidencia de la realización del tutorial de **time profiling**, junto con las conclusiones obtenidas sobre el uso del tiempo en las funciones. 
+
+# Desarrollo
+
