@@ -1,6 +1,6 @@
 $$ \text{Rendimiento} = \frac{1}{T} $$
 
-$$ \text{Speedup} = \frac{Rendimiento  Mejorado}{Rendimiento Base} $$
+$$ \text{Speedup} = \frac{Rendimiento Mejorado}{Rendimiento Base} $$
 
 Y como sabemos que el rendimiento, en cuanto a tiempo de compilación, del procesador Ryzen 9 7950X es el mayor de los tres, la fórmula adquiere la siguiente expresión:
 
