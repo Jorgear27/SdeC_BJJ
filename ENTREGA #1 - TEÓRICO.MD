@@ -6,7 +6,7 @@ Y como sabemos que el rendimiento, en cuanto a tiempo de compilación, del proce
 
 $$ \text{Speedup} = \frac{R_{\text{Ryzen 9 7950X}}}{R_{\text{procesador base}}} $$
 
-o, análogamente: 
+o, análogamente:
 
 $$ \text{Speedup} = \frac{T_{\text{procesador base}}}{T_{\text{Ryzen 9 7950X}}} $$
 
