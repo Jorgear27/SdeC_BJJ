@@ -2,12 +2,12 @@
 Repositorio dedicado al desarrollo de los trabajos prácticos de Sistemas de Computación
 -
 
-##**Alumnos:**
+## **Alumnos:**
 * Arbach, Jorge
 * Fraga, Bianca Agustina
 * López, José
   
-##**Profesores:**
+## **Profesores:**
 * Jorge, Javier
 * Lamberti, Germán
 * Solinas, Miguel
