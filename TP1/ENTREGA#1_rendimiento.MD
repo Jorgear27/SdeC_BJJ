@@ -150,7 +150,7 @@ A continuación, se ejecuta un programa en una ESP32 que realiza una serie de op
 
 De acuerdo con la teoría, si la frecuencia del procesador se reduce a la mitad, el tiempo de ejecución debería duplicarse. Es decir, a 160 MHz, el programa debería tardar aproximadamente 15 segundos, y a 80 MHz, cerca de 30 segundos.
 
-*Resultados*
+**Resultados**
 
 ![Figura 3](imagenes/Resultados_Figura3.png)
 ![Figura 4](imagenes/Resultados_Figura4.png)
