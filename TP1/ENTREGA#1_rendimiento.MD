@@ -2,7 +2,7 @@
 ## Parte I - RENDIMIENTO
 
 **Nombres**  
-_Jorge A. Arbach_; _Bianca A. Fraga_;  _José López_.
+_Jorge A. Arbach_; _Bianca A. Fraga_;  _José I. López Sivilat_.
 
 
 **Grupo**: BJJ
