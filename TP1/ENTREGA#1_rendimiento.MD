@@ -122,3 +122,33 @@ $$ \text{Speedup} = \frac{97}{53} = 1.830 $$
 - El **Ryzen 9 7950X** es aproximadamente **1.57 veces más rápido** que el **i5-13600K** y **1.83 veces más rápido** que el **Ryzen 9 5900X** al compilar el kernel de Linux.  
 - Su eficiencia energética (rendimiento por watt) también es la más alta, lo que lo hace más adecuado para tareas intensivas como compilación y servidores.  
 - Su balance entre rendimiento y eficiencia refuerza su posición como uno de los procesadores más competitivos para tareas de alto consumo computacional, demostrando ser una inversión sólida tanto en términos de velocidad como de economía de energía.
+
+## Práctica con el ESP32
+
+Teóricamente, **si se duplica la frecuencia del procesador, el tiempo de ejecución del programa debería de reducirse aproximadamente a la mitad**, debido a que el procesador puede realizar más operaciones por segundo. Esto se basa en el principio de que el rendimiento de un procesador está directamente relacionado con su frecuencia de reloj. 
+
+Sin embargo, hay ciertos factores que podrían influir en el resultado y afectar el tiempo de ejecución:
+
+1.**Latencia y ancho de banda de la memoria:** Si el código implica frecuentes accesos a memoria, el rendimiento podría estar limitado por la velocidad de la RAM más que por la frecuencia del procesador. Esto se lo conoce como *“cuello de botella en la memoria”*
+
+2.**Optimización del código:** Código no optimizado puede generar operaciones redundantes o poco eficientes que no aprovechan completamente el incremento de frecuencia. 
+
+3.**Eficiencia de la arquitectura del procesador:** Algunas arquitecturas están diseñadas para realizar más operaciones por ciclo, independientemente de la frecuencia. 
+
+4.**Paralelización:** Si el código no aprovecha los múltiples núcleos del procesador, el aumento en frecuencia beneficiará solo a un núcleo, limitando la mejora.
+
+5.**Consumo de energía y gestión térmica:** Al aumentar la frecuencia, el procesador genera más calor y consume más energía. Si la temperatura sube demasiado, el procesador podría reducir automáticamente su frecuencia para protegerse, anulando las mejoras. 
+
+6.**Efecto de caché:** Los procesadores modernos tienen múltiples niveles de memoria caché. Si los datos y las instrucciones del programa están bien optimizados para aprovechar el caché, el aumento de frecuencia será más efectivo. De lo contrario, se pierde tiempo accediendo a la memoria principal. 
+
+### Pruebas en ESP32
+
+A cotinuacion se ejecuta un programa en una ESP32 que realiza una serie de operaciones diseñadas para tardar aproximadamente 10 segundos con una frecuencia de reloj de 240 MHz. Luego, el mismo código se ejecuta con frecuencias de 160 MHz y 80 MHz para observar cómo varía el tiempo de ejecución.
+
+De acuerdo con la teoría, si la frecuencia del procesador se reduce a la mitad, el tiempo de ejecución debería duplicarse. Es decir, a 160 MHz, el programa debería tardar aproximadamente 15 segundos, y a 80 MHz, cerca de 30 segundos.
+
+*Resultados*
+
+![Resultado del codigo ejecutado en la ESP32](img/mi_imagen.png)
+
+Los resultados obtenidos permiten comprobar las premisas teóricas de la relación lineal entre el tiempo de ejecución y la frecuencia del reloj. Sin embargo, en la práctica, esta relación no es exacta debido a los diversos factores mencionados previamente.
