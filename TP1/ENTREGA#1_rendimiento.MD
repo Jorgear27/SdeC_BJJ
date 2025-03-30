@@ -145,10 +145,15 @@ Sin embargo, hay ciertos factores que podrían influir en el resultado y afectar
 
 A continuación, se ejecuta un programa en una ESP32 que realiza una serie de operaciones diseñadas para tardar aproximadamente 10 segundos con una frecuencia de reloj de 240 MHz. Luego, el mismo código se ejecuta con frecuencias de 160 MHz y 80 MHz para observar cómo varía el tiempo de ejecución.
 
+![Figura 1](imagenes/ESP32_Figura1.png)
+![Figura 2](imagenes/ESP32_Figura2.png)
+
 De acuerdo con la teoría, si la frecuencia del procesador se reduce a la mitad, el tiempo de ejecución debería duplicarse. Es decir, a 160 MHz, el programa debería tardar aproximadamente 15 segundos, y a 80 MHz, cerca de 30 segundos.
 
 *Resultados*
 
-![Resultado del codigo ejecutado en la ESP32](img/mi_imagen.png)
+![Figura 3](imagenes/Resultados_Figura3.png)
+![Figura 4](imagenes/Resultados_Figura4.png)
+
 
 Los resultados obtenidos permiten comprobar las premisas teóricas de la relación lineal entre el tiempo de ejecución y la frecuencia del reloj. Sin embargo, en la práctica, esta relación no es exacta debido a los diversos factores mencionados previamente.
