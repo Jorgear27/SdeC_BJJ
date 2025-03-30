@@ -143,7 +143,7 @@ Sin embargo, hay ciertos factores que podrían influir en el resultado y afectar
 
 ### Pruebas en ESP32
 
-A cotinuacion se ejecuta un programa en una ESP32 que realiza una serie de operaciones diseñadas para tardar aproximadamente 10 segundos con una frecuencia de reloj de 240 MHz. Luego, el mismo código se ejecuta con frecuencias de 160 MHz y 80 MHz para observar cómo varía el tiempo de ejecución.
+A continuación, se ejecuta un programa en una ESP32 que realiza una serie de operaciones diseñadas para tardar aproximadamente 10 segundos con una frecuencia de reloj de 240 MHz. Luego, el mismo código se ejecuta con frecuencias de 160 MHz y 80 MHz para observar cómo varía el tiempo de ejecución.
 
 De acuerdo con la teoría, si la frecuencia del procesador se reduce a la mitad, el tiempo de ejecución debería duplicarse. Es decir, a 160 MHz, el programa debería tardar aproximadamente 15 segundos, y a 80 MHz, cerca de 30 segundos.
 
