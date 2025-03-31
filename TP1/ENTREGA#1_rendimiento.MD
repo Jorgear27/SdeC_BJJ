@@ -200,9 +200,7 @@ Como mencionamos en un principio, si duplicamos la frecuencia del procesador, es
 
 **Resultados**
 
-![Figura 2](imagenes/Resultados_Figura1.png)
 ![Figura 2](imagenes/Resultados_Figura2.png)
-
 
 Como podemos ver, los resultados obtenidos siguen la hipótesis de que duplicar la frecuencia del procesador reduce aproximadamente a la mitad el tiempo de ejecución.
 
