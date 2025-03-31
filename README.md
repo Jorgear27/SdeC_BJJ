@@ -5,7 +5,7 @@ Repositorio dedicado al desarrollo de los trabajos prácticos de Sistemas de Com
 ## **Alumnos:**
 * Arbach, Jorge
 * Fraga, Bianca Agustina
-* López, José
+* López Sivilat, José I.
   
 ## **Profesores:**
 * Jorge, Javier
