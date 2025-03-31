@@ -215,24 +215,24 @@ Se realizaron las acciones correspondientes al tutorial recomendado, siguiendo p
 
 ### 1. Creación de perfiles habilitada durante la compilación, ejecución del código y herramienta gprof
 
-![Figura 3](Profiling/Capturas/Screenshot from 2025-03-28 18-53-04.png)
+![Figura 3](Profiling/Capturas/Tutorial_Captura_1.png)
 
 ### 2. Customización de la salida generada por gprof
 #### Supresión de la impresión de funciones declaradas estáticamente (privadas) usando -a
 
-![Figura 4](Profiling/Capturas/Screenshot from 2025-03-28 18-54-18.png)
+![Figura 4](Profiling/Capturas/Tutorial_Captura_2.png)
 
 #### Supresión de los textos detallados usando -b
 
-![Figura 5](Profiling/Capturas/Screenshot from 2025-03-28 18-54-41.png)
+![Figura 5](Profiling/Capturas/Tutorial_Captura_3.png)
 
 #### Impresión solo de perfil plano usando -p
 
-![Figura 6](Profiling/Capturas/Screenshot from 2025-03-28 18-54-57.png)
+![Figura 6](Profiling/Capturas/Tutorial_Captura_4.png)
 
 ####  Impresión de información relacionada con funciones específicas en perfil plano
 
-![Figura 7](Profiling/Capturas/Screenshot from 2025-03-28 18-55-13.png)
+![Figura 7](Profiling/Capturas/Tutorial_Captura_5.png)
 
 Como se puede ver, la función **func1** consumió el mayor porcentaje de tiempo de CPU, indicando que este sería un punto clave para optimización, si deseasemos hacerlo con un programa real.  
 
