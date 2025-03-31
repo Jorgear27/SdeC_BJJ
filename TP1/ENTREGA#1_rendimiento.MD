@@ -209,9 +209,48 @@ Los resultados obtenidos permiten comprobar las premisas teóricas de la relaci�
 
 ## Time Profiling 
 
+El objetivo de este experimento es analizar el uso del tiempo de ejecución de diferentes funciones en un entorno Linux utilizando herramientas de *time profiling*. Esto permite identificar cuellos de botella y optimizar el rendimiento del código.  
+
+Se realizaron las acciones correspondientes al tutorial recomendado, siguiendo paso por paso las instrucciones del mismo. A continuación, se presentan las capturas obtenidas durante la ejecución del tutorial:  
+
+### 1. Creación de perfiles habilitada durante la compilación, ejecución del código y herramienta gprof
+
+![Figura 3](Profiling/Capturas/Screenshot from 2025-03-28 18-53-04.png)
+
+### 2. Customización de la salida generada por gprof
+#### Supresión de la impresión de funciones declaradas estáticamente (privadas) usando -a
+
+![Figura 4](Profiling/Capturas/Screenshot from 2025-03-28 18-54-18.png)
+
+#### Supresión de los textos detallados usando -b
+
+![Figura 5](Profiling/Capturas/Screenshot from 2025-03-28 18-54-41.png)
+
+#### Impresión solo de perfil plano usando -p
+
+![Figura 6](Profiling/Capturas/Screenshot from 2025-03-28 18-54-57.png)
+
+####  Impresión de información relacionada con funciones específicas en perfil plano
+
+![Figura 7](Profiling/Capturas/Screenshot from 2025-03-28 18-55-13.png)
+
+Como se puede ver, la función **func1** consumió el mayor porcentaje de tiempo de CPU, indicando que este sería un punto clave para optimización, si deseasemos hacerlo con un programa real.  
+
+Este uso de herramientas de *time profiling* en Linux permite evaluar el rendimiento de un programa y detectar los principales cuellos de botella. Con esta información, se pueden aplicar optimizaciones enfocadas en mejorar la eficiencia del código y reducir tiempos de ejecución en tareas críticas.  
+
 ---
 
 # Conclusión
 
+En esta práctica, se abordaron distintos aspectos del análisis de rendimiento. En primer lugar se hizo un analisis de distintos benchmarks, los cuales miden diferentes aspectos del rendimiento de una computadora, cada uno correspondiente al area de relevancia particular que tiene cada usuario.
+
+Además, en el experimento con el ESP32, se demostró que duplicar la frecuencia del procesador redujo el tiempo de ejecución casi a la mitad. Esto validó la relación directa entre la frecuencia del reloj y la velocidad de ejecución de tareas computacionales puras, aunque en escenarios más complejos pueden intervenir otros factores. 
+
+Por último, exploraron herramientas de *time profiling* en Linux para analizar cómo se distribuye el tiempo de ejecución entre las diferentes funciones de un programa. Esto permite identificar cuellos de botella y evaluar la eficiencia de distintas partes del código, lo que es fundamental para optimizar software en distintos entornos.
+
+
 # Referencias
 - [1] Phoronix Test Suite. (n.d.). PTS Build Linux Kernel 1.15.0. OpenBenchmarking. https://openbenchmarking.org/test/pts/build-linux-kernel-1.15.0
+- [2] GPROF && Perf Tutorial. (n.d.). https://docs.google.com/document/d/1Joti4QvLCKWydGrhPjsREdtP12klnNJco14xiaV-pMg/edit?tab=t.0#heading=h.auqkwwvpsqwa
+- [3] Código de ejecución de Time Profiling. https://drive.google.com/file/d/1vdyutbVCPSrvUnOibSZeKrtzc3KKJMi9/view
+- [4] Código de ejecución nuevo de Time Profiling. https://drive.google.com/file/d/1foAK4RuzoOJTAO6eaaHekGnLHc--vxOL/view
