@@ -25,6 +25,8 @@ _jose.lopez.sivilat@mi.unc.edu.ar_;
 
 El siguiente informe tiene como objetivo analizar y responder una serie de preguntas relacionadas con el uso de benchmarks y el rendimiento de procesadores en tareas específicas. A través de este análisis, se busca comprender cómo los benchmarks pueden ser herramientas útiles para medir y optimizar las tareas diarias, así como evaluar el desempeño de diferentes procesadores en la compilación del kernel de Linux. Además, se incluirán capturas de pantalla como evidencia de la realización del tutorial de **time profiling**, junto con las conclusiones obtenidas sobre el uso del tiempo en las funciones. 
 
+---
+
 # Desarrollo
 
 ## Benchmarks
@@ -129,31 +131,89 @@ Teóricamente, **si se duplica la frecuencia del procesador, el tiempo de ejecuc
 
 Sin embargo, hay ciertos factores que podrían influir en el resultado y afectar el tiempo de ejecución:
 
-1.**Latencia y ancho de banda de la memoria:** Si el código implica frecuentes accesos a memoria, el rendimiento podría estar limitado por la velocidad de la RAM más que por la frecuencia del procesador. Esto se lo conoce como *“cuello de botella en la memoria”*
+1. **Latencia y ancho de banda de la memoria:** Si el código implica frecuentes accesos a memoria, el rendimiento podría estar limitado por la velocidad de la RAM más que por la frecuencia del procesador. Esto se lo conoce como *“cuello de botella en la memoria”*
 
-2.**Optimización del código:** Código no optimizado puede generar operaciones redundantes o poco eficientes que no aprovechan completamente el incremento de frecuencia. 
+2. **Optimización del código:** Código no optimizado puede generar operaciones redundantes o poco eficientes que no aprovechan completamente el incremento de frecuencia. 
 
-3.**Eficiencia de la arquitectura del procesador:** Algunas arquitecturas están diseñadas para realizar más operaciones por ciclo, independientemente de la frecuencia. 
+3. **Eficiencia de la arquitectura del procesador:** Algunas arquitecturas están diseñadas para realizar más operaciones por ciclo, independientemente de la frecuencia. 
 
-4.**Paralelización:** Si el código no aprovecha los múltiples núcleos del procesador, el aumento en frecuencia beneficiará solo a un núcleo, limitando la mejora.
+4. **Paralelización:** Si el código no aprovecha los múltiples núcleos del procesador, el aumento en frecuencia beneficiará solo a un núcleo, limitando la mejora.
 
-5.**Consumo de energía y gestión térmica:** Al aumentar la frecuencia, el procesador genera más calor y consume más energía. Si la temperatura sube demasiado, el procesador podría reducir automáticamente su frecuencia para protegerse, anulando las mejoras. 
+5. **Consumo de energía y gestión térmica:** Al aumentar la frecuencia, el procesador genera más calor y consume más energía. Si la temperatura sube demasiado, el procesador podría reducir automáticamente su frecuencia para protegerse, anulando las mejoras. 
 
-6.**Efecto de caché:** Los procesadores modernos tienen múltiples niveles de memoria caché. Si los datos y las instrucciones del programa están bien optimizados para aprovechar el caché, el aumento de frecuencia será más efectivo. De lo contrario, se pierde tiempo accediendo a la memoria principal. 
+6. **Efecto de caché:** Los procesadores modernos tienen múltiples niveles de memoria caché. Si los datos y las instrucciones del programa están bien optimizados para aprovechar el caché, el aumento de frecuencia será más efectivo. De lo contrario, se pierde tiempo accediendo a la memoria principal. 
 
-### Pruebas en ESP32
+**Pruebas en ESP32**
 
-A continuación, se ejecuta un programa en una ESP32 que realiza una serie de operaciones diseñadas para tardar aproximadamente 10 segundos con una frecuencia de reloj de 240 MHz. Luego, el mismo código se ejecuta con frecuencias de 160 MHz y 80 MHz para observar cómo varía el tiempo de ejecución.
+En este experimento, la idea es observar cómo cambia el tiempo de ejecución de un programa cuando se modifica la frecuencia del procesador.
 
-![Figura 1](imagenes/ESP32_Figura1.png)
-![Figura 2](imagenes/ESP32_Figura2.png)
+![Figura 1](imagenes/ESP32_Figura1.jpg)
 
-De acuerdo con la teoría, si la frecuencia del procesador se reduce a la mitad, el tiempo de ejecución debería duplicarse. Es decir, a 160 MHz, el programa debería tardar aproximadamente 15 segundos, y a 80 MHz, cerca de 30 segundos.
+Con este objetivo, a continuación, se ejecuta un programa en una ESP32 que realiza una serie de operaciones diseñadas para tardar aproximadamente 10 segundos con una frecuencia de reloj de 240 MHz. Luego, el mismo código se ejecuta con frecuencias de 160 MHz y 80 MHz para observar cómo varía el tiempo de ejecución.
+
+```cpp
+void setup() {
+    Serial.begin(115200);
+    delay(1000); // Pequeño delay para estabilidad
+
+    unsigned long startTime, endTime; // Variables para medir el tiempo
+
+    // Probar diferentes frecuencias de CPU
+    int freqs[] = {240, 160, 80};
+    Serial.println("Test: Tiempo de ejecución de programa con distintas frecuencias de clock");
+
+    for (int i = 0; i < 3; i++) {
+        setCpuFrequencyMhz(freqs[i]); // Cambia la frecuencia del CPU
+
+        // Mostrar la frecuencia actual
+        Serial.print("Frecuencia del CPU: ");
+        Serial.print(getCpuFrequencyMhz());
+        Serial.println(" MHz");
+
+        // Medir el tiempo antes de iniciar la cuenta
+        startTime = millis();
+
+        // Cuenta hasta 12,631,578 ciclos
+        volatile unsigned long count = 0;
+        while (count < 126315789) {
+            count++;
+        }
+
+        // Medir el tiempo al finalizar
+        endTime = millis();
+
+        // Mostrar el tiempo que tardó en completarse el conteo
+        Serial.print("Tiempo transcurrido: ");
+        Serial.print(endTime - startTime);
+        Serial.println(" ms");
+
+        Serial.println("Cuenta terminada.");
+    }
+}
+
+void loop() {
+    // No hace nada
+}
+```
+
+Como mencionamos en un principio, si duplicamos la frecuencia del procesador, esperamos que el tiempo de ejecución se reduzca aproximadamente a la mitad, asumiendo que la tarea es completamente dependiente de la CPU y no hay otros factores limitantes como acceso a memoria o latencias externas. Si la frecuencia del procesador se reduce a la mitad, el tiempo de ejecución debería duplicarse. Es decir, a 160 MHz, el programa debería tardar aproximadamente 15 segundos, y a 80 MHz, cerca de 30 segundos.
 
 **Resultados**
 
-![Figura 3](imagenes/Resultados_Figura3.png)
-![Figura 4](imagenes/Resultados_Figura4.png)
+![Figura 2](imagenes/Resultados_Figura1.png)
+![Figura 2](imagenes/Resultados_Figura2.png)
 
 
-Los resultados obtenidos permiten comprobar las premisas teóricas de la relación lineal entre el tiempo de ejecución y la frecuencia del reloj. Sin embargo, en la práctica, esta relación no es exacta debido a los diversos factores mencionados previamente.
+Como podemos ver, los resultados obtenidos siguen la hipótesis de que duplicar la frecuencia del procesador reduce aproximadamente a la mitad el tiempo de ejecución.
+
+Los resultados obtenidos permiten comprobar las premisas teóricas de la relación lineal entre el tiempo de ejecución y la frecuencia del reloj. Esto es lo que esperaríamos bajo una suposición ideal donde la carga de trabajo es puramente computacional y no hay otros factores limitantes. Sin embargo, en la práctica, esta relación no es exacta debido a los diversos factores mencionados previamente. 
+
+
+## Time Profiling 
+
+---
+
+# Conclusión
+
+# Referencias
+- [1] Phoronix Test Suite. (n.d.). PTS Build Linux Kernel 1.15.0. OpenBenchmarking. https://openbenchmarking.org/test/pts/build-linux-kernel-1.15.0
