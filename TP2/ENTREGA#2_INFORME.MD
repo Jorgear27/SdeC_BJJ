@@ -169,9 +169,11 @@ Las pruebas con Postman son esenciales para validar el funcionamiento de la API 
 
 El proyecto demostró la viabilidad de integrar diferentes lenguajes y paradigmas (alto y bajo nivel) en un entorno coordinado y funcional. La utilización del stack para pasar parámetros entre C y ensamblador fue exitosa, cumpliendo con las convenciones del sistema operativo y facilitando una arquitectura modular y extensible.
 
-La arquitectura basada en una API REST permite una separación clara entre la interfaz de usuario y la lógica de negocio, permitiendo escalar el sistema o reutilizar los componentes de forma independiente.
+La arquitectura basada en una API REST proporcionó una separación clara entre la lógica de negocio y la interfaz de usuario, lo que habilita su reutilización y expansión futura. Además, esta estructura facilita el mantenimiento y la integración de nuevos puntos finales, mejorando la flexibilidad del sistema en diferentes entornos de uso.
 
-Herramientas como Postman jugaron un papel clave en la validación y depuración del proyecto, garantizando su fiabilidad y precisión. En conjunto, este trabajo cumple con sus objetivos y sienta las bases para futuras mejoras y expansiones.
+La utilización de herramientas modernas como Postman fue clave para validar y depurar el sistema, permitiendo identificar y corregir posibles errores de manera eficiente. Estas pruebas aseguraron la precisión de las operaciones implementadas y verificaron la consistencia de las respuestas de la API frente a diferentes casos de uso.
+
+En conclusión, este proyecto no solo cumplió con sus objetivos técnicos, sino que también proporcionó un marco para entender y aplicar conceptos fundamentales de integración entre lenguajes, manejo de bajo nivel y diseño de arquitecturas modernas. Esta experiencia puede servir como base para proyectos futuros que busquen optimizar recursos, ampliar la funcionalidad existente o explorar nuevas aplicaciones tecnológicas.
 
 # Referencias
 
