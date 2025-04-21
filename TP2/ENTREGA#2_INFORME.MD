@@ -105,7 +105,7 @@ make
 
 ### 5. Ejecución de la API
 
-La ejecución de la API marca el inicio de la interacción del usuario con el sistema. Para iniciarla, simplemente navega al directorio `api` y utiliza el comando `python api.py`. Esto pondrá en funcionamiento el servidor Flask en el puerto predeterminado (127.0.0.1:5000), listo para recibir solicitudes.
+La ejecución de la API marca el inicio de la interacción del usuario con el sistema. Para iniciarla, simplemente navega al directorio `api` y utiliza el comando `python api.py`. Esto pondrá en funcionamiento el servidor Flask en el puerto predeterminado (`127.0.0.1:5000`), listo para recibir solicitudes.
 
 ```bash
 cd api
@@ -119,6 +119,8 @@ python api.py
 
 
 ### 6. Pruebas con Postman
+
+Las pruebas con Postman son esenciales para validar el funcionamiento de la API y verificar que los puntos finales responden correctamente a las solicitudes. Este proceso incluye enviar datos estructurados en formato JSON al punto final `/calculo` y analizar la respuesta esperada, garantizando que las operaciones aritméticas sean precisas.
 
 - URL: `http://127.0.0.1:5000/calculo`
 - Método: `POST`
@@ -169,7 +171,7 @@ El proyecto demostró la viabilidad de integrar diferentes lenguajes y paradigma
 
 La arquitectura basada en una API REST permite una separación clara entre la interfaz de usuario y la lógica de negocio, permitiendo escalar el sistema o reutilizar los componentes de forma independiente.
 
-Además, el uso de herramientas como Postman facilitó la validación y depuración del sistema. 
+Herramientas como Postman jugaron un papel clave en la validación y depuración del proyecto, garantizando su fiabilidad y precisión. En conjunto, este trabajo cumple con sus objetivos y sienta las bases para futuras mejoras y expansiones.
 
 # Referencias
 
