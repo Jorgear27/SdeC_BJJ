@@ -75,18 +75,34 @@ def hacer_calculo():
 
 ### 3. Rutinas en Ensamblador (`c_assembler/operaciones.asm`)
 
-Las rutinas en ensamblador son la base de las operaciones aritméticas en el sistema, aprovechando el stack para el paso de parámetros y la gestión eficiente de los registros.
-Cada operación está diseñada siguiendo las convenciones de llamada de funciones para la arquitectura x86-64.
+Este apartado documenta las funciones aritméticas implementadas en lenguaje ensamblador para la arquitectura x86-64. Estas rutinas forman parte del núcleo del proyecto y permiten realizar operaciones básicas de manera eficiente, aprovechando la manipulación directa de registros y siguiendo la convención de llamada de funciones estándar, lo cual facilita su integración con código en C.
 
-**Ejemplo de suma:** Esta implementación utiliza el registro `rax` para almacenar el resultado, y las variables de entrada se reciben en los registros `rdi` y `rsi`. Se preserva el estado de `rbp` para mantener la coherencia del stack. A continuación se realiza una suma básica: 
+Las funciones definidas son `suma`, `resta`, `mul` y `division`, y utilizan los registros `rdi` y `rsi` para recibir parámetros, devolviendo el resultado en `rax`.
 
 ```asm
-suma:
-    push rbp
-    mov rbp, rsp
-    mov rax, rdi
-    add rax, rsi
-    pop rbp
+global suma, resta, mul, division
+
+section .text
+
+suma:               ; int suma(int a, int b)
+    mov rax, rdi    ; rax = a
+    add rax, rsi    ; rax += b
+    ret
+
+resta:              ; int resta(int a, int b)
+    mov rax, rdi    ; rax = a
+    sub rax, rsi    ; rax -= b
+    ret
+
+mul:                ; int mul(int a, int b)
+    mov rax, rdi    ; rax = a
+    imul rsi        ; rax *= b (multiplicación con signo)
+    ret
+
+division:           ; int division(int a, int b)
+    mov rax, rdi    ; rax = a (dividendo)
+    cqo             ; extiende el signo de rax a rdx para dividir
+    idiv rsi        ; rax = a / b (división con signo)
     ret
 ```
 
