@@ -22,3 +22,5 @@ _jose.lopez.sivilat@mi.unc.edu.ar_.
 ---
 
 # Introducción
+
+Los procesadores x86 presentan una evolución , el **modo real** representa su estado inicial y más básico, diseñado para garantizar compatibilidad con sistemas antiguos. Sin embargo, con la llegada del **modo protegido** en los procesadores de la serie 80286, se abre un nuevo capítulo en el avance tecnológico dando lugar a nuevas características como la _protección de memoria_, _soporte de multitarea_, 
