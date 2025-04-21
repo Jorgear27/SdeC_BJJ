@@ -61,7 +61,7 @@ pip install flask
 
 ### 2. API REST en Flask (`api/api.py`)
 
-Se define un endpoint `POST /calculo` que recibe un JSON con los valores `a`, `b` y el tipo de `operacion` (suma, resta, mul, division). Internamente llama al binario `calcular` que procesa los datos.
+La implementación de la API REST en Flask constituye el núcleo de la interacción entre el usuario y el sistema de cálculo. En este componente, se define un endpoint `POST /calculo` que recibe como entrada un JSON con los valores `a`, `b` y el tipo de `operacion` (suma, resta, mul, division). Este endpoint se encarga de procesar los datos ingresados y de invocar al binario `calcular`, el cual lleva a cabo las operaciones solicitadas.
 
 ```python
 @app.route('/calculo', methods=['POST'])
@@ -75,8 +75,10 @@ def hacer_calculo():
 
 ### 3. Rutinas en Ensamblador (`c_assembler/operaciones.asm`)
 
-Cada operación está implementada usando el stack para el paso de parámetros.
-Ejemplo de suma:
+Las rutinas en ensamblador son la base de las operaciones aritméticas en el sistema, aprovechando el stack para el paso de parámetros y la gestión eficiente de los registros.
+Cada operación está diseñada siguiendo las convenciones de llamada de funciones para la arquitectura x86-64.
+
+**Ejemplo de suma:** Esta implementación utiliza el registro `rax` para almacenar el resultado, y las variables de entrada se reciben en los registros `rdi` y `rsi`. Se preserva el estado de `rbp` para mantener la coherencia del stack. A continuación se realiza una suma básica: 
 
 ```asm
 suma:
@@ -90,6 +92,10 @@ suma:
 
 ### 4. Compilación con Cmake (`CMakeLists.txt`)
 
+La compilación del proyecto se realiza utilizando CMake, que permite gestionar de forma eficiente el proceso de construcción. Los comandos mencionados crean un directorio para los archivos de compilación (`build`) y ejecutan las instrucciones necesarias para generar los binarios del proyecto.
+
+Es recomendable verificar que todas las dependencias estén correctamente configuradas antes de ejecutar estos comandos, asegurando así que CMake detecte los archivos fuente y el ensamblador sin problemas.
+
 ```bash
 mkdir build
 cd build
@@ -98,6 +104,8 @@ make
 ```
 
 ### 5. Ejecución de la API
+
+La ejecución de la API marca el inicio de la interacción del usuario con el sistema. Para iniciarla, simplemente navega al directorio `api` y utiliza el comando `python api.py`. Esto pondrá en funcionamiento el servidor Flask en el puerto predeterminado (127.0.0.1:5000), listo para recibir solicitudes.
 
 ```bash
 cd api
@@ -155,7 +163,7 @@ python api.py
 
 ---
 
-# Conclusion
+# Conclusión
 
 El proyecto demostró la viabilidad de integrar diferentes lenguajes y paradigmas (alto y bajo nivel) en un entorno coordinado y funcional. La utilización del stack para pasar parámetros entre C y ensamblador fue exitosa, cumpliendo con las convenciones del sistema operativo y facilitando una arquitectura modular y extensible.
 
