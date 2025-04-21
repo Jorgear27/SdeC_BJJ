@@ -106,7 +106,52 @@ division:           ; int division(int a, int b)
     ret
 ```
 
-### 4. Compilación con Cmake (`CMakeLists.txt`)
+### 4. Código en C (`src/main.c`)
+
+El siguiente código en C actúa como interfaz principal para interactuar con las rutinas aritméticas implementadas en lenguaje ensamblador. A través de este programa, se recibe entrada desde la línea de comandos, se interpreta la operación solicitada, y se llama a la función correspondiente implementada en ensamblador.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Declaración de funciones externas implementadas en ensamblador
+extern long suma(long a, long b);
+extern long resta(long a, long b);
+extern long mul(long a, long b);
+extern long division(long a, long b);
+
+int main(int argc, char *argv[]) {
+    if (argc < 4) {
+        printf("Uso: %s <a> <b> <operacion>\n", argv[0]);
+        return 1;
+    }
+
+    long a = atol(argv[1]);      // Conversión del primer argumento a número entero
+    long b = atol(argv[2]);      // Conversión del segundo argumento a número entero
+    char *op = argv[3];          // Tercer argumento: tipo de operación a realizar
+    long res = 0;
+
+    // Comparación de la operación solicitada y llamada a la rutina correspondiente
+    if (strcmp(op, "suma") == 0)
+        res = suma(a, b);
+    else if (strcmp(op, "resta") == 0)
+        res = resta(a, b);
+    else if (strcmp(op, "mul") == 0)
+        res = mul(a, b);
+    else if (strcmp(op, "div") == 0)
+        res = division(a, b);
+    else {
+        printf("Operación no válida.\n");
+        return 1;
+    }
+
+    // Muestra el resultado en consola
+    printf("%ld\n", res);
+    return 0;
+}
+
+### 5. Compilación con Cmake (`CMakeLists.txt`)
 
 La compilación del proyecto se realiza utilizando CMake, que permite gestionar de forma eficiente el proceso de construcción. Los comandos mencionados crean un directorio para los archivos de compilación (`build`) y ejecutan las instrucciones necesarias para generar los binarios del proyecto.
 
@@ -119,7 +164,7 @@ cmake ..
 make
 ```
 
-### 5. Ejecución de la API
+### 6. Ejecución de la API
 
 La ejecución de la API marca el inicio de la interacción del usuario con el sistema. Para iniciarla, simplemente navega al directorio `api` y utiliza el comando `python api.py`. Esto pondrá en funcionamiento el servidor Flask en el puerto predeterminado (`127.0.0.1:5000`), listo para recibir solicitudes.
 
@@ -134,7 +179,7 @@ python api.py
 
 
 
-### 6. Pruebas con Postman
+### 7. Pruebas con Postman
 
 Las pruebas con Postman son esenciales para validar el funcionamiento de la API y verificar que los puntos finales responden correctamente a las solicitudes. Este proceso incluye enviar datos estructurados en formato JSON al punto final `/calculo` y analizar la respuesta esperada, garantizando que las operaciones aritméticas sean precisas.
 
