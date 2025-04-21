@@ -2,24 +2,23 @@ global suma, resta, mul, division
 
 section .text
 
-; int suma(int a, int b)
-suma:
-    mov rax, rdi
-    add rax, rsi
+suma:               ; int suma(int a, int b)
+    mov rax, rdi    ; rax = a
+    add rax, rsi    ; rax += b
     ret
 
-resta:
-    mov rax, rdi
-    sub rax, rsi
+resta:              ; int resta(int a, int b)
+    mov rax, rdi    ; rax = a
+    sub rax, rsi    ; rax -= b
     ret
 
-mul:
-    mov rax, rdi
-    imul rsi
+mul:                ; int mul(int a, int b)
+    mov rax, rdi    ; rax = a
+    imul rsi        ; rax *= b (multiplicación con signo)
     ret
 
-division:
-    mov rax, rdi
-    cqo
-    idiv rsi
+division:           ; int division(int a, int b)
+    mov rax, rdi    ; rax = a (dividendo)
+    cqo             ; extiende el signo de rax a rdx para dividir
+    idiv rsi        ; rax = a / b (división con signo)
     ret
