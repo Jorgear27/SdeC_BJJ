@@ -29,6 +29,7 @@ El objetivo principal del proyecto es aplicar conceptos de integración entre le
 Este sistema tiene aplicaciones prácticas en escenarios que requieren optimización de recursos o un rendimiento elevado, y busca fomentar la comprensión de conceptos fundamentales, como las convenciones ABI y el manejo del stack.
 
 Este informe pretende ser una guía detallada del diseño, implementación y pruebas realizadas, brindando una visión completa del proceso de desarrollo y el potencial educativo y práctico de esta solución.
+
 ---
 
 # Desarrollo
