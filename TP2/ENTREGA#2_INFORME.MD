@@ -22,7 +22,9 @@ _jose.lopez.sivilat@mi.unc.edu.ar_.
 ---
 
 # Introducción
-El presente informe documenta el desarrollo de un sistema de cálculo aritmético que integra diversas tecnologías de software, combinando una API REST desarrollada en Python (usando Flask), una capa intermedia en lenguaje C y rutinas de cálculo implementadas en lenguaje ensamblador para arquitectura x86-64. 
+El presente informe documenta, en una primera parte, el desarrollo de un sistema de cálculo aritmético que integra diversas tecnologías de software, combinando una API REST desarrollada en Python (usando Flask), una capa intermedia en lenguaje C y rutinas de cálculo implementadas en lenguaje ensamblador para arquitectura x86-64. 
+
+En una segunda parte se buscará implementar un sistema de cálculo del índice GINI utilizando la misma arquitectura por capas. La capa superior, desarrollada en Python, se encarga de recuperar datos desde una API REST del Banco Mundial. Los datos obtenidos son procesados por una capa intermedia en lenguaje C, que a su vez delega cálculos críticos a rutinas en lenguaje ensamblador. Estas rutinas hacen uso explícito del stack para pasar parámetros y devolver resultados, permitiendo una exploración detallada del comportamiento a bajo nivel mediante herramientas como GDB.
 
 El objetivo principal del proyecto es aplicar conceptos de integración entre lenguajes de alto y bajo nivel, con un enfoque especial en la utilización del stack para el paso de parámetros y la recuperación de resultados, conforme a las convenciones de llamada de funciones.
 
@@ -33,7 +35,7 @@ Este informe pretende ser una guía detallada del diseño, implementación y pru
 ---
 
 # Desarrollo
-
+# **Parte I - Calculadora Básica**
 
 ## Estructura del Proyecto
 
@@ -225,6 +227,142 @@ Las pruebas con Postman son esenciales para validar el funcionamiento de la API 
 
 ![Figura 4](imagenes/Figura4.png)
 
+# **Parte II - Calculadora GINI**
+## Estructura del Proyecto
+
+El proyecto está organizado de manera idéntica a la primera parte:
+
+```
+GINI/
+├── api/
+│   └── gini_api.py
+├── c_assembler/
+│   ├── ginig_ops.asm
+│   └── calcular_gini.c
+├── CMakeLists.txt
+```
+
+## Paso a Paso de la Implementación
+### 1. Obtención de datos desde API REST (Python)
+
+Se utiliza la biblioteca `requests` de Python para consultar el índice GINI de un país específico (ej. Argentina) en el rango de años 2011-2020.
+
+**Archivo**: `api/gini_api.py`
+
+```python
+url = "https://api.worldbank.org/v2/en/country/ARG/indicator/SI.POV.GINI?format=json&date=2011:2020"
+response = requests.get(url)
+data = response.json()
+```
+
+El script extrae el primer valor no nulo y lo pasa como argumento al ejecutable en C mediante `subprocess.run()`.
+
+```python
+subprocess.run(["../build/calcular_gini", str(gini)], ...)
+```
+
+---
+
+### 2. Paso de datos a la capa intermedia en C
+
+**Archivo**: `c_assembler/calcular_gini.c`
+
+La función principal convierte el argumento recibido (float) y lo pasa a la función en ensamblador que hace el cálculo.
+
+```c
+extern int procesar_gini(float valor);
+
+int main(int argc, char *argv[]) {
+    float gini = atof(argv[1]);
+    int resultado = procesar_gini(gini);
+    printf("%d\n", resultado);
+    return 0;
+}
+```
+
+### 3. Implementación de rutina en ensamblador
+
+**Archivo**: `c_assebmbler/gini_ops.asm`
+
+```asm
+section .text
+global procesar_gini
+
+procesar_gini:
+    push rbp
+    mov rbp, rsp
+
+    ; Convertir float en xmm0 a int en eax (truncamiento)
+    cvttss2si eax, xmm0
+    add eax, 1
+
+    pop rbp
+    ret
+```
+
+Esta función utiliza el registro `xmm0` para recibir el valor `float`, lo convierte a `int` con `cvttss2si`, le suma uno, y devuelve el resultado en `eax`.
+
+
+### 4. Compilación y generación del ejecutable
+
+**Archivo**: `/CMakeLists.txt`
+
+Este archivo incluye las opciones de depuración necesarias tanto para NASM como para GCC, las cuales son ejecutadas al momento de compilar el projecto con cmake.
+
+```
+nasm -f elf64 -g -F dwarf ${CMAKE_SOURCE_DIR}/c_assembler/gini_ops.asm -o ${CMAKE_BINARY_DIR}/gini_ops.o
+
+gcc -g -c ${CMAKE_SOURCE_DIR}/c_assembler/calcular_gini.c -o ${CMAKE_BINARY_DIR}/calcular_gini.o
+```
+
+![Figura 5](imagenes/Figura5.png)
+
+### 5. Análisis del stack con GDB
+
+Se utilizaron los siguientes comandos en GDB para depurar la ejecución y observar el uso del stack:
+
+```bash
+gdb ./calcular_gini
+```
+
+#### Estado del Stack:
+
+Durante el análisis de la función `procesar_gini`, se pueden observar las siguientes transiciones en el stack:
+- **Antes de la llamada**:
+  - El programa en C llama a `procesar_gini(gini)` pasando el valor `float` por el registro `xmm0` (conforme a la convención de llamadas System V AMD64).
+  - El stack contiene el valor de retorno de la función `main` y posibles valores temporales o variables automáticas.
+  - `$rsp` apunta al retorno desde `main()`.
+
+![Figura 6](imagenes/Figura6.png)
+
+
+- **Durante la ejecución de la función ASM**:
+  - Se ejecuta `push rbp`, almacenando el valor actual del *frame pointer*.
+  - `$rsp` decrece con `push rbp` y apunta al valor antiguo de `rbp`.
+  - Luego `mov rbp, rsp` establece un nuevo marco de pila para la función.
+  - No se realiza reserva de espacio adicional ya que los datos se manejan vía registros (`xmm0` y `eax`).
+  - El stack permanece estable, con `rbp` apuntando al marco de esta función y `rsp` inmediatamente por debajo.
+
+![Figura 7](imagenes/Figura7.png)
+
+
+- **Después de la ejecución**:
+  - Se realiza `pop rbp`, restaurando el marco anterior.
+  - `ret` extrae la dirección de retorno desde el tope del stack.
+  - El stack queda tal como estaba antes de la llamada, asegurando la integridad del flujo del programa.
+
+![Figura 8](imagenes/Figura8.png)
+
+Antes de la función:
+[rsp] -> [ dirección de retorno ]
+
+Durante la función:
+[rsp] -> [ antiguo rbp ]
+         [ dirección de retorno ]
+
+Después de la función:
+[rsp] -> [ dirección de retorno de main ]
+
 ---
 
 # Conclusión
@@ -235,9 +373,12 @@ La arquitectura basada en una API REST proporcionó una separación clara entre 
 
 La utilización de herramientas modernas como Postman fue clave para validar y depurar el sistema, permitiendo identificar y corregir posibles errores de manera eficiente. Estas pruebas aseguraron la precisión de las operaciones implementadas y verificaron la consistencia de las respuestas de la API frente a diferentes casos de uso.
 
-En conclusión, este proyecto no solo cumplió con sus objetivos técnicos, sino que también proporcionó un marco para entender y aplicar conceptos fundamentales de integración entre lenguajes, manejo de bajo nivel y diseño de arquitecturas modernas. Esta experiencia puede servir como base para proyectos futuros que busquen optimizar recursos, ampliar la funcionalidad existente o explorar nuevas aplicaciones tecnológicas.
+Además, GDB fue una herramienta clave para visualizar y entender el uso de registros y el comportamiento del stack durante la ejecución del programa. Esta depuración mostró que el stack permanece limpio y correctamente gestionado antes, durante y después de cada llamada.
+
+En conclusión, este proyecto no solo cumplió con sus objetivos técnicos, sino que también proporcionó un marco para entender y aplicar conceptos fundamentales de integración entre lenguajes, manejo de bajo nivel y diseño de arquitecturas modernas. 
 
 # Referencias
 
 - API Integration in Python. Recuperado de https://realpython.com/api-integration-in-python/
 - Postman. Recuperado de https://www.postman.com/
+- Banco Mundial - Indicador GINI. Recuperado de https://data.worldbank.org/indicator/SI.POV.GINI
