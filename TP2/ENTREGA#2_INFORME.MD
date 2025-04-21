@@ -150,6 +150,7 @@ int main(int argc, char *argv[]) {
     printf("%ld\n", res);
     return 0;
 }
+```
 
 ### 5. Compilación con Cmake (`CMakeLists.txt`)
 
