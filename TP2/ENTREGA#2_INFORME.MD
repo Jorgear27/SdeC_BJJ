@@ -106,7 +106,7 @@ division:           ; int division(int a, int b)
     ret
 ```
 
-### 4. Código en C (`src/main.c`)
+### 4. Código en C (`c_assembler/main.c`)
 
 El siguiente código en C actúa como interfaz principal para interactuar con las rutinas aritméticas implementadas en lenguaje ensamblador. A través de este programa, se recibe entrada desde la línea de comandos, se interpreta la operación solicitada, y se llama a la función correspondiente implementada en ensamblador.
 
