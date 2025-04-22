@@ -353,25 +353,41 @@ Durante el análisis de la función `procesar_gini`, se pueden observar las sigu
   - No se realiza reserva de espacio adicional ya que los datos se manejan vía registros (`xmm0` y `eax`).
   - El stack permanece estable, con `rbp` apuntando al marco de esta función y `rsp` inmediatamente por debajo.
 
+El resultado del comando `x/16x $rsp` muestra una porción de la memoria en la pila en el momento de ejecución del programa. Cada fila representa una dirección de memoria (como `0x7fffffffdaf8`) y los valores almacenados en esa dirección en formato hexadecimal:
+
+* **Direcciones de retorno:** Los valores como `0x004011b3` serían direcciones que apuntan al lugar del código al que el programa regresará después de ejecutar la función actual. 
+
+* **Valores asociados a la función:** Algunos de los valores, como `0x422a0000`, están relacionados con datos que la función está procesando, en este caso el valor GINI que fue pasado como argumento.
+
+* **Datos del sistema:** Valores como `0x00007fff` son comunes en programas en ejecución y representan configuraciones de memoria o registros del sistema.
+
 ![Figura 7](imagenes/Figura7.png)
 
 
 - **Después de la ejecución**:
-  - Se realiza `pop rbp`, restaurando el marco anterior.
+  - Se realiza `pop rbp`, restaurando el marco anterior, liberando espacio reservado para la función que acaba de ejecutarse.
   - `ret` extrae la dirección de retorno desde el tope del stack.
   - El stack queda tal como estaba antes de la llamada, asegurando la integridad del flujo del programa.
+
+Este manejo es parte del convenio de llamadas (calling convention), que define estándares para el intercambio de parámetros, valores de retorno y la preservación de los registros entre funciones.
 
 ![Figura 8](imagenes/Figura8.png)
 
 Antes de la función:
 [rsp] -> [ dirección de retorno ]
 
+El puntero de pila (**rsp**) apunta a la **dirección de retorno**, que indica el lugar exacto en el código al que se debe regresar después de ejecutar la función.
+
 Durante la función:
 [rsp] -> [ antiguo rbp ]
          [ dirección de retorno ]
 
+La pila se reorganiza para acomodar el **marco de la función**. Esto significa que el puntero de pila ahora apunta al **antiguo valor de rbp** (puntero base), que preserva el estado previo. Luego, se almacena nuevamente la **dirección de retorno** para garantizar que, una vez completada la función, el programa pueda continuar correctamente.
+
 Después de la función:
 [rsp] -> [ dirección de retorno de main ]
+
+Después de la ejecución de la función, el puntero de pila (**rsp**) apunta a la dirección de retorno de la función principal (**main**), asegurando que el programa continúe correctamente y mantenga la integridad del flujo de ejecución. Esto es clave para preservar el estado del stack y evitar errores.
 
 ---
 
