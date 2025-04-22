@@ -373,18 +373,18 @@ Este manejo es parte del convenio de llamadas (calling convention), que define e
 
 ![Figura 8](imagenes/Figura8.png)
 
-Antes de la función:
+**Antes de la función:**
 [rsp] -> [ dirección de retorno ]
 
 El puntero de pila (**rsp**) apunta a la **dirección de retorno**, que indica el lugar exacto en el código al que se debe regresar después de ejecutar la función.
 
-Durante la función:
+**Durante la función:**
 [rsp] -> [ antiguo rbp ]
          [ dirección de retorno ]
 
 La pila se reorganiza para acomodar el **marco de la función**. Esto significa que el puntero de pila ahora apunta al **antiguo valor de rbp** (puntero base), que preserva el estado previo. Luego, se almacena nuevamente la **dirección de retorno** para garantizar que, una vez completada la función, el programa pueda continuar correctamente.
 
-Después de la función:
+**Después de la función:**
 [rsp] -> [ dirección de retorno de main ]
 
 Después de la ejecución de la función, el puntero de pila (**rsp**) apunta a la dirección de retorno de la función principal (**main**), asegurando que el programa continúe correctamente y mantenga la integridad del flujo de ejecución. Esto es clave para preservar el estado del stack y evitar errores.
