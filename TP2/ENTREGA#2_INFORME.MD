@@ -317,6 +317,16 @@ gcc -g -c ${CMAKE_SOURCE_DIR}/c_assembler/calcular_gini.c -o ${CMAKE_BINARY_DIR}
 
 ![Figura 5](imagenes/Figura5.png)
 
+En la _figura 5_, se muestra la ejecución de un proceso informático en un entorno virtual activo, identificado como `venv`. El entorno virtual permite aislar las dependencias del proyecto, garantizando compatibilidad y control sobre los paquetes instalados.
+
+El comando ejecutado es `python gini_api.py`, cuyo propósito es iniciar el archivo Python denominado `gini_api.py`. Este archivo está diseñado para procesar información relacionada con un valor GINI. El proceso se desarrolla en las siguientes etapas:
+
+* **Recepción del valor GINI:** El programa obtiene el índice de Gini desde la API del Banco Mundial, analizando los datos hasta encontrar el primer valor válido.
+
+* **Procesamiento del valor:** El valor recibido, 42.7, se envía a un programa en C que realiza un ajuste o transformación, aumentando el valor a 43.
+
+* **Generación del resultado final:** Tras el procesamiento, el programa entrega el valor ajustado como resultado final, que se muestra en la terminal.
+
 ### 5. Análisis del stack con GDB
 
 Se utilizaron los siguientes comandos en GDB para depurar la ejecución y observar el uso del stack:
