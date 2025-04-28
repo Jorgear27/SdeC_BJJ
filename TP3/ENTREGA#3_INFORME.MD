@@ -31,6 +31,8 @@ En este trabajo práctico se explorarán los conceptos asociados al modo protegi
 
 # Desarrollo
 
+
+
 ## Preguntas y Respuestas
 
 ### 1. ¿Qué diferencia principal existe entre el modo real y el modo protegido?
@@ -106,9 +108,19 @@ Se han detectado vulnerabilidades críticas en implementaciones UEFI. Un ejemplo
 
 ### ¿Qué es Coreboot? ¿Qué productos lo incorporan? ¿Ventajas?
 
-**Coreboot** es un proyecto de firmware de código abierto destinado a reemplazar el BIOS/UEFI propietarios. Realiza solo las tareas necesarias para cargar un sistema operativo moderno.
+**Coreboot** (antes llamado LinuxBIOS) es un proyecto dirigido a reemplazar el firmware no libre de los BIOS propietarios, encontrados en la mayoría de los computadores, por un BIOS libre y ligero diseñado para realizar solamente el mínimo de tareas necesarias para cargar y correr un sistema operativo moderno de 32 bits o de 64 bits. 
 
-**Ventajas**:
+Se integra en una variedad de productos, incluyendo computadoras portátiles, de escritorio, servidores y dispositivos embebidos, especialmente en _Chromebooks_ y otros productos de ChromeOS. También se utiliza en proyectos como _Libreboot_ y en algunas placas base de hardware libre.
+
+**Productos que incorporan Coreboot**
+
+* Dispositivos ChromeOS: todos los Chromebooks, Chromeboxes, Chromebits, etc., desde 2012. 
+* Computadoras portátiles y de escritorio: algunas marcas como System76, StarLabs y Librem ofrecen opciones con Coreboot. 
+* Placas base: ofrece soporte para algunas placas base de marca como Asus, Asrock, Gigabyte, MSI, entre otras. 
+* Servidores: coreboot se utiliza para reducir el tiempo de arranque en servidores. 
+* Dispositivos embebidos: también se puede utilizar en dispositivos con arquitecturas como ARM, ARM64 y RISC-V, así como en plataformas de software en un chip.
+
+**Ventajas de su utilización**:
 - Transparencia total: código abierto y auditable.
 - Control sobre el hardware, sin restricciones de proveedores.
 - Mayor seguridad y privacidad.
