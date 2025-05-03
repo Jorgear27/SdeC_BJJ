@@ -40,6 +40,7 @@ https://gitlab.com/sistemas-de-computacion-2021/protected-mode-sdc
 1. Correr la imagen: Instalar y correr qemu con la imagen en cuestión
 
 `sudo apt install qemu-system-x86`
+
 `qemu-system-x86_64 --drive file=main.img,format=raw,index=0,media=disk`
 
 
