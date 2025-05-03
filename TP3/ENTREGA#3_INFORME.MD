@@ -41,21 +41,27 @@ Al ingresar a dicho enlace, nos encontramos con tres comandos a seguir:
 git clone (url of this repo)
 git submodule init
 git submodule update
-
 ```
-
 Y obtuvimos como resultado, lo siguiente: 
 
 ![Figura 1](imagenes/Figura1.png)
+
+A continuación, se explica lo que significa cada comando:
+
+* `git clone:` Descarga un repositorio completo desde una URL remota.
+* `git submodule init:` Inicializa los submódulos en el repositorio. Los submódulos en Git son repositorios dentro de otros repositorios. A veces, un proyecto principal depende de otros proyectos más pequeños o módulos.
+* `git submodule update:` Actualiza los submódulos a la última versión. Esto descargará los cambios más recientes en los submódulos y los vinculará correctamente al proyecto principal.
+
 
 
 ## OBJETIVOS
 
 1. Correr la imagen: Instalar y correr qemu con la imagen en cuestión
 
-> sudo apt install qemu-system-x86
-> qemu-system-x86_64 --drive file=main.img,format=raw,index=0,media=disk`
-
+```
+sudo apt install qemu-system-x86
+qemu-system-x86_64 --drive file=main.img,format=raw,index=0,media=disk`
+```
 
 
 ## Preguntas y Respuestas
