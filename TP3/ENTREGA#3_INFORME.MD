@@ -29,8 +29,18 @@ En este trabajo práctico se explorarán los conceptos asociados al modo protegi
 
 ---
 
-# Desarrollo
+# DESARROLLO
 
+En primer lugar, debimos clonar un repositorio e iniciar los submódulos, tal como lo indica el README de dicho repositorio:
+
+https://gitlab.com/sistemas-de-computacion-2021/protected-mode-sdc
+
+## OBJETIVOS
+
+1. Correr la imagen: Instalar y correr qemu con la imagen en cuestión
+
+`sudo apt install qemu-system-x86
+qemu-system-x86_64 --drive file=main.img,format=raw,index=0,media=disk`
 
 
 ## Preguntas y Respuestas
