@@ -37,9 +37,12 @@ https://gitlab.com/sistemas-de-computacion-2021/protected-mode-sdc
 
 Al ingresar a dicho enlace, nos encontramos con tres comandos a seguir:
 
-> git clone (url of this repo)
-> git submodule init
-> git submodule update
+```
+git clone (url of this repo)
+git submodule init
+git submodule update
+
+```
 
 Y obtuvimos como resultado, lo siguiente: 
 
