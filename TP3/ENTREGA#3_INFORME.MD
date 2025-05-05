@@ -119,6 +119,7 @@ En esta parte se usará el ensamblador x86 en modo real para escribir "hello wor
 Para ello haremos uso de los archivos proporcionados en el repositorio clonado:
 
 * **[main.S](./3.hello_world/main.S)**: Código fuente en ensamblador x86 que muestra "hello world" en pantalla utilizando la interrupción de BIOS `0x10` para manejar la salida de texto.
+
    - `.code16`: indica que el código debe ejecutarse en modo real de 16 bits.
    - `mov $msg, %si`: carga la dirección de memoria de la cadena "hello world" en el registro _SI_ (se usa como índice para             correrla). `msg` es un puntero a la cadena de texto.
    - `mov $0x0e, %ah`: configura el modo de impresión de caracteres mediante la interrupción de video `INT 0x10`. `AH = 0X0E`           indica que la BIOS debe imprimir un carácter en pantalla.
@@ -133,6 +134,7 @@ Para ello haremos uso de los archivos proporcionados en el repositorio clonado:
    - `msg`: define la cadena de texto "hello world" en memoria.
    - `.asciz "hello world"`: guarda "hello world" en memoria con un carácter nulo (`0x00`) al final. 
 * **[link.ld](./3.hello_world/link.ld)**: Script de linker personalizado para crear una imagen de arranque que se puede cargar desde el sector de arranque de un disco.
+
    - `SECTIONS`: este bloque define las secciones en la imagen de salida.
    - `. = 0x7c00;`: indica que el código se debe cargar en la dirección `0x07C00`, que es donde el BIOS coloca el sector de             arranque.
    - `.text`: define la sección de código ejecutable.
@@ -244,6 +246,7 @@ En primer lugar, ejecutamos el comando `objdump -D main.o`, que desensambla el a
 ![Figura 10](imagen/Figura10.jpeg)
 
 En la imagen se muestra el resultado del comando:
+
    - `Dirección 0x00`: indica el inicio del programa en memoria. 
    - `mov $0xeb40000, %esi`: carga el valor `0xeb40000` en el registro _ESI_. 
    - `lods`: carga el siguiente byte de la cadena en _AL_ (contiene el primer carácter) y avanza automáticamente _RSI_ (apunta a        la cadena "hello world"). 
@@ -311,9 +314,136 @@ Esto es útil cuando se necesita un binario para cargar directamente en una memo
 
 ## **5. Modo Protegido**
 
+En esta sección se quiere demostrar cómo ingresar al modo protegido en la arquitectura x86 sin utilizar macros, configurando correctamente la **GDT (Global Descriptor Table)** con descriptores separados para código y datos. Además, se debe verificar el correcto funcionamiento del sistema de segmentación, incluyendo la protección de acceso en memoria mediante bits de acceso. Todas las pruebas se van a realizar utilizando ensamblador en formato plano y ejecutadas en QEMU, con soporte de GDB para depuración.
 
-### Preguntas
+### A. Crear un código assembler que pueda pasar a modo protegido (sin macros).
+En primer lugar, se desarrolló un código en ensamblador (NASM), basandonos en los ejemplos del repositorio proporcionado, que realiza los siguientes pasos:
 
+**[protected_mode.asm](./4.Protected_mode/protected_mode.asm)**:
+1. Desactiva las interrupciones (CLI).
+2. Carga la GDT con tres descriptores:
+
+   * Descriptor nulo.
+   * Segmento de código ejecutable/legible.
+   * Segmento de datos legible/escribible.
+3. Activa el modo protegido seteando el bit PE (Protection Enable) en el registro CR0.
+4. Realiza un salto lejano (`jmp 0x08:protected_mode_code_segment`) para pasar efectivamente al modo protegido.
+5. Establece los registros de segmento (`ds`, `es`, `ss`, etc.) con el selector de datos.
+
+```asm
+   cli
+   lgdt [gdt_descriptor]
+    
+   ; Habilitar modo protegido
+   mov eax, cr0
+   or eax, 1
+   mov cr0, eax
+    
+   jmp 0x08:protected_mode_code_segment
+```
+
+Esto nos genera una imagen booteable que entra a modo protegido sin macros, la cual podemos probar con QEMU.
+
+Para ello debemos ensamblar el código `.asm` con NASM
+
+```bash
+nasm -f bin -o protected_mode.img protected_mode.asm
+```
+
+Esto nos genera un archivo binario plano (`protected_mode.img`) que podemos ejecutar directamente en QEMU como una imagen de disco.
+
+Además, para depurarlo paso a paso con GDB, debemos lanzar QEMU de la siguiente manera:
+
+```bash
+qemu-system-i386 -drive format=raw,file=protected_mode.img -S -s
+```
+
+Y en otra terminal, ejecutamos el gdb, y dentro del mismo realizamos:
+
+```gdb
+(gdb) set architecture i386
+(gdb) target remote localhost:1234
+(gdb) break *0x7C00       # Dirección del boot sector
+(gdb) c
+```
+
+![Figura 14](imagen/Figura14.png)
+
+
+### B. ¿Cómo sería un programa que tenga dos descriptores de memoria diferentes, uno para cada segmento (código y datos) en espacios de memoria diferenciados? 
+
+En `protected_mode.asm`, definimos dos descriptores con distintas finalidades:
+
+```asm
+gdt_start:
+    dq 0x0000000000000000       ; descriptor nulo
+    dq 0x00CF9A000000FFFF       ; código: base=0, límite=FFFFF, rx
+    dq 0x00CF92000000FFFF       ; datos: base=0, límite=FFFFF, rw
+```
+
+- **Segmento de código** (`selector = 0x08`): ejecutable y legible (`E/R`)
+- **Segmento de datos** (`selector = 0x10`): legible y escribible (`R/W`)
+
+Ambos descriptores tienen base 0x00000000 y límite 0xFFFFF, es decir, abarcan todo el espacio de direcciones lineales posibles (4 GB).
+
+| Tipo   | Selector | Base       | Límite  | Acceso |
+| ------ | -------- | ---------- | ------- | ------ |
+| Código | 0x08     | 0x00000000 | 0xFFFFF | E/R    |
+| Datos  | 0x10     | 0x00000000 | 0xFFFFF | R/W    |
+
+
+### C. Cambiar los bits de acceso del segmento de datos para que sea de solo lectura,  intentar escribir, ¿Que sucede? ¿Que debería suceder a continuación? 
+
+Se modificó el descriptor de datos para que sea solo lectura (bit W=0). El valor del campo de acceso quedó como `0x90` en lugar de `0x92`. Ya que el byte de acceso en un descriptor de segmento tiene el siguiente formato (en binario):
+
+```
+P | DPL | S | E/R | A | W | E | A
+```
+
+- **P (Presente)**: Indica si el segmento está presente en memoria (1 = presente).
+- **DPL (Descriptor Privilege Level)**: Nivel de privilegio del segmento (0 = más privilegiado, 3 = menos privilegiado).
+- **S (Descriptor Type)**: Indica si es un descriptor de sistema (0) o de segmento (1).
+- **E/R (Executable/Readable)**: Si es un segmento de código, indica si es ejecutable. Si es un segmento de datos, indica si es expandible hacia abajo.
+- **A (Accessed)**: Indica si el segmento ha sido accedido (el procesador lo actualiza automáticamente).
+- **W (Writable)**: Si es un segmento de datos, indica si es escribible (1 = escribible, 0 = solo lectura).
+
+En el caso de los segmentos de datos:
+- `0x92` (10010010b): Segmento de datos legible y escribible.
+- `0x90` (10010000b): Segmento de datos legible pero no escribible (solo lectura).
+
+A continuación, luego de entrar a modo protegido, se intentó realizar una escritura sobre este segmento:
+
+```asm
+mov dword [0x00100000], 0x12345678
+```
+
+Esta operación genera una **falla de protección general (interrupt 0x0D)**, ya que se intenta escribir en una región marcada como de solo lectura. Utilizando GDB, se debería poder verificar que:
+
+- El salto al modo protegido fue exitoso.
+- La instrucción de escritura fue alcanzada.
+- La excepción se generó justo en ese punto.
+
+Sin embargo, no se pudo lograr generar dicha falla con QEMU, indicando que se debería probar en la PC, pero generar excepciones de hardware intencionales es peligroso.
+
+
+### D. En modo protegido, ¿Con qué valor se cargan los registros de segmento ? ¿Porque?
+
+Una vez en modo protegido, los registros `cs`, `ds`, `ss`, `es`, etc., ya no contienen direcciones lógicas sino **selectores**, que son índices en la GDT. 
+
+Al hacer:
+
+```asm
+mov ax, 0x10
+mov ds, ax
+```
+
+El valor `0x10` indica:
+
+* Índice: 2 (porque `0x10 >> 3 = 2`)
+* Tabla: GDT (TI=0)
+* Nivel de privilegio: 0 (RPL=0)
+
+Esto permite separar espacios de direcciones y establecer permisos diferentes por segmento.
 
 ---
 
@@ -322,6 +452,9 @@ Esto es útil cuando se necesita un binario para cargar directamente en una memo
 El modo protegido representó un salto cualitativo en la arquitectura de los procesadores x86, permitiendo la implementación de sistemas operativos multitarea y seguros. Gracias a sus mecanismos de segmentación, paginación y control de privilegios, se logró una administración más eficiente y confiable de los recursos del sistema, sentando las bases de la computación moderna.
 
 Asimismo, comprender el funcionamiento de tecnologías como UEFI, CSME y Coreboot, así como los procesos de linking a bajo nivel, resulta indispensable para entender el funcionamiento interno de los sistemas actuales y garantizar su seguridad y correcto desempeño.
+
+Además, las prácticas permitieron verificar el funcionamiento del modo protegido a bajo nivel, configurar descriptores manualmente y observar cómo se protege la memoria frente a accesos indebidos. Este tipo de configuraciones, que es la base de sistemas operativos reales, nos permite comprender en profundidad la arquitectura x86.
+
 
 # Referencias
 
