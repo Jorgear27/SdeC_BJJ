@@ -90,7 +90,15 @@ hd main.img
 sudo apt install qemu-system-x86
 qemu-system-x86_64 --drive file=main.img,format=raw,index=0,media=disk`
 ```
+![Figura 3](imagen/Figura3.jpeg)
 
+Una vez que ejecutamos dicho comando, obtuvimos como resultado lo siguiente:
+
+![Figura 4](imagen/Figura4.jpeg)
+
+Como conclusión de este primer objetivo, se desarrolló y probó un **Master Boot Record (MBR)** desde cero, utilizando instrucciones en ensamblador y herramientas como `as`, `objdump` y `hd`. A través de la creación de una imagen de disco (`main.img`) con una secuencia específica de bytes y la inclusión de la instrucción `hlt`, se exploró el proceso de configuración y prueba de un MBR funcional.
+
+La ejecución en **QEMU** confirmó que la imagen de disco se carga correctamente, mostrando la secuencia de arranque con _SeaBIOS_ e _iPXE_ sin errores críticos. Esto valida que la imagen generada es reconocida por la máquina virtual.
 
 ## Preguntas y Respuestas
 
