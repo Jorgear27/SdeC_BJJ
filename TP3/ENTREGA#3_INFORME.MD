@@ -88,7 +88,7 @@ En nuestro caso específico, al iniciar el proceso de arranque desde la imagen c
 
 **3. UEFI y Coreboot**
 
-* **¿Qué es UEFI? ¿Cómo puedo usarlo? Función de ejemplo.**
+_**¿Qué es UEFI? ¿Cómo puedo usarlo? Función de ejemplo.**_
 
 La **Unified Extensible Firmware Interface (UEFI)** es una especificación que define una interfaz entre el sistema operativo y el firmware. UEFI reemplaza la antigua BIOS tradicional, soporta particiones GPT, es independiente de la arquitectura de CPU y ofrece una interfaz gráfica amigable.
 
@@ -105,7 +105,7 @@ Para usar UEFI, se necesita:
 
 **Función de ejemplo**: Desde UEFI se podría llamar a una función de arranque seguro (**Secure Boot**) para validar firmas de los sistemas operativos.
 
-* **¿Casos de bugs de UEFI explotables**
+_**¿Casos de bugs de UEFI explotables**_
 
 Ha habido varios casos en los que vulnerabilidades en UEFI han sido explotadas para comprometer la seguridad del sistema. Algunos ejemplos son:
 
@@ -117,7 +117,7 @@ Ha habido varios casos en los que vulnerabilidades en UEFI han sido explotadas p
 
 Estos casos demuestran la importancia de mantener el firmware actualizado y aplicar medidas de seguridad como Secure Boot y análisis de integridad del sistema.
 
-* **¿Qué es CSME y MEBx?**
+_**¿Qué es CSME y MEBx?**_
 
 **CSME (Converged Security and Management Engine)**: es un subsistema integrado en los procesadores modernos que gestiona funciones de seguridad y administración. Su propósito es garantizar la integridad del firmware y proteger el sistema desde el arranque. Además, se encarga de:
 
@@ -131,7 +131,7 @@ Estos casos demuestran la importancia de mantener el firmware actualizado y apli
   - Cambio de contraseñas de administración: se usa para establecer credenciales seguras.
   - Control de arranque remoto: facilita el acceso y mantenimiento de equipos sin intervención física.
 
-* **¿Qué es Coreboot? ¿Qué productos lo incorporan? ¿Ventajas?**
+_**¿Qué es Coreboot? ¿Qué productos lo incorporan? ¿Ventajas?**_
 
 **Coreboot** (antes llamado LinuxBIOS) es un proyecto dirigido a reemplazar el firmware no libre de los BIOS propietarios, encontrados en la mayoría de los computadores, por un BIOS libre y ligero diseñado para realizar solamente el mínimo de tareas necesarias para cargar y correr un sistema operativo moderno de 32 bits o de 64 bits. 
 
