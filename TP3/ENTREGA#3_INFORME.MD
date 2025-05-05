@@ -195,23 +195,57 @@ Por lo que obtenemos como resultado, lo siguiente:
 
 ![Figura 9](imagen/Figura9.jpeg)
 
+La imagen muestra el proceso de arranque en **QEMU**, con el firmware SeaBIOS y la ejecución del mensaje "hello world_" al final. Esto indica que el bootloader fue cargado correctamente, por ende, el código ensamblador y el script de enlace están funcionando como se esperaba.
 
-## 2. Linker
+**5. Linker**
 
-### ¿Qué es un linker? ¿Qué hace?
+_**¿Qué es un linker? ¿Qué hace?**_
 
-Un **linker** es una herramienta utilizada para unir múltiples archivos objeto (.o) en un solo archivo ejecutable o en una biblioteca compartida. Su función principal es:
-- Combinar archivos objeto.
-- Resolver referencias cruzadas entre funciones y variables.
+Un **linker** (o editor de enlaces) es una herramienta que combina múltiples archivos objeto generados por un compilador en un único archivo ejecutable o binario. Su función principal es resolver referencias entre distintas partes del código y organizar correctamente las direcciones de memoria. Además:
 
-### ¿Qué es la dirección que aparece en el script del linker? ¿Por qué es necesaria?
+* Une archivos objeto: toma archivos generados por el compilador (`.o`) y los combina en un solo programa.
+* Resuelve direcciones de memoria: ajusta las referencias entre funciones y variables que están en distintos módulos.
+* Asigna secciones en la memoria: ubica segmentos de código, datos y pila en áreas específicas.
+* Incluye librerías: vincula funciones externas, como las de C estándar o librerías dinámicas.
+* Genera el ejecutable final: crea un archivo listo para ejecutarse en el sistema operativo.
 
-En el script del linker suele aparecer la dirección **0x7C00**.  
-Esta dirección es fundamental porque:
-- El BIOS carga el primer sector de arranque de un disco exactamente en **0x7C00**.
-- El código debe estar ubicado ahí para que, al encender el sistema, el BIOS transfiera correctamente el control de ejecución al cargador de arranque.
+_**¿Qué es la dirección que aparece en el script del linker? ¿Por qué es necesaria?**_
 
-Si no se especifica correctamente esta dirección, el sistema no podrá arrancar de manera esperada.
+La dirección que aparece en el script del linker (`link.ld`) es una dirección de memoria específica donde se cargará el código durante la ejecución.
+
+Los motivos por el cuál es necesaria, son los siguientes:
+
+* Ubicación del código en la memoria: en un bootloader, la CPU espera que el código se cargue en `0x7C00`, ya que el BIOS coloca el primer sector de arranque ahí.
+* Corrección de referencias: si el linker no conoce la ubicación exacta, las direcciones de funciones y variables podrían calcularse incorrectamente.
+* Acceso a hardware y registros: algunos programas, como sistemas operativos o drivers, necesitan ubicarse en direcciones específicas para operar correctamente.
+
+_**Comparando la salida de `objdump` con `hd`, se observa lo siguiente:**_
+
+![Figura 10](imagen/Figura10.jpeg)
+
+La imagen muestra la salida del comando `objdump -D main.o`, que desensambla el archivo objeto `main.o` para mostrar el código máquina en lenguaje ensamblador.
+
+   - `Dirección 0x00`: indica el inicio del programa en memoria. 
+   - `mov $0xeb40000, %esi`: carga el valor `0xeb40000` en el registro _ESI_. 
+   - `lods`: carga el siguiente byte de la cadena en _AL_ (contiene el primer carácter) y avanza automáticamente _RSI_ (apunta a        la cadena "hello world"). 
+   - `or %al, %al`: compara _AL_ consigo mismo. Si _AL_ es `0x00` (fin de cadena), se activa el flag ZF (Zero Flag).
+   - `je e <halt>`: salta a `halt` si ZF = 1 (cuando _AL_ es 0). Indica que terminamos de imprimir y se debe detener el programa.
+   - `int $0x10`: llama a la interrupción del `BIOS 0x10`, que imprime el contenido de _AL_ en pantalla. 
+   - `jmp 5 <loop>`: salta a la dirección 5, donde comienza la siguiente iteración de impresión. Esto repite el proceso hasta           que `AL = 0x00`.
+   - `hlt`: detiene la CPU. Una vez impreso "hello world", el sistema entra en estado de espera.
+   - `push $0x6f6c6c65`: guarda "hello" en la pila. 
+
+El resultado que obtuvimos muestra el desensamblado del código binario del bootloader, confirmando que las instrucciones se han ubicado correctamente en memoria y que el programa sigue la lógica prevista. La dirección inicial `0x0000000000000000` y la etiqueta `<loop-0x5>` sugieren ajustes del linker en la organización del código. Además, la correcta implementación de la interrupción `INT 0x10` indica que la rutina de impresión de "hello world" está funcionando como se espera.
+
+![Figura 11](imagen/Figura11.jpeg)
+
+La opción `--oformat binary` en el linker sirve para generar un archivo binario plano a partir de archivos de código objeto. En lugar de crear un ejecutable con una estructura definida (como ELF o COFF), simplemente combina los datos en un único archivo sin encabezados ni información adicional.
+
+Esto es útil cuando se necesita un binario para cargar directamente en una memoria ROM, un microcontrolador o un dispositivo de arranque, como el _Master Boot Record (MBR)_. Al generar un archivo binario sin sobrecarga, este puede escribirse en un almacenamiento como un USB, permitiendo que el sistema lo reconozca como un bootloader válido.
+
+
+
+
 
 ---
 
