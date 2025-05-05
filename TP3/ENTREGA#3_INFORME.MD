@@ -105,7 +105,7 @@ Para grabar la imagen `protected_mode.img`, se deberá realizar lo siguiente:
 ```bash
 ./run protected_mode
 ```  
-Como ya se instaló qemu preciamente, podemos ejecutar todos los ejemplos del repositorio dado utilizando un script incluido llamado “run”. Este script se encarga de complilar el ejemplo protected_mode.S y correrlo.
+Como ya se instaló **QEMU** preciamente, podemos ejecutar todos los ejemplos del repositorio dado utilizando un script incluido llamado “run”. Este script se encarga de complilar el ejemplo `protected_mode.S` y correrlo.
 - Grabar nuevamente la imagen.
 
 ![Figura 6](imagen/Figura6.png)
@@ -141,7 +141,7 @@ Para ello haremos uso de los archivos proporcionados en el repositorio clonado:
    - `. = 0x1FE;`: ubica el puntero en el byte _510_ , dentro de los _512_ bytes del sector de arranque.
    - `SHORT(0xAA55)`: añade la firma `0xAA55` en los últimos 2 bytes del sector de arranque, lo que indica al BIOS que este             código es un _bootloader válido_.
 
-- En primer lugar, debemos ensabmblar el código fuente
+- En primer lugar, debemos ensamblar el código fuente
 ```bash
 as -g -o main.o main.S
 ```
