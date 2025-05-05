@@ -64,7 +64,7 @@ Donde el primer comando tiene la siguiente explicación:
 
 ## OBJETIVOS
 
-1. Correr la imagen: Instalar y correr qemu con la imagen en cuestión
+**1. Correr la imagen: Instalar y correr qemu con la imagen en cuestión**
 
 ```
 sudo apt install qemu-system-x86
@@ -80,7 +80,7 @@ Como conclusión de este primer objetivo, se desarrolló y probó un **Master Bo
 
 La ejecución en **QEMU** confirmó que la imagen de disco se carga correctamente, mostrando la secuencia de arranque con _SeaBIOS_ e _iPXE_ sin errores críticos. Esto valida que la imagen generada es reconocida por la máquina virtual.
 
-2. Ejecutar programas en el hardware: Grabar un pendrive con la imagen a probar, colocar el pen en la pc y colocar el pen en la pc encenderla e indicar que inicie desde la misma.
+**2. Ejecutar programas en el hardware: Grabar un pendrive con la imagen a probar, colocar el pen en la pc y colocar el pen en la pc encenderla e indicar que inicie desde la misma**
 
 ![Figura 5](imagen/Figura5.jpeg)
 
