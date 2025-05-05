@@ -37,56 +37,138 @@ https://gitlab.com/sistemas-de-computacion-2021/protected-mode-sdc
 
 Al ingresar a dicho enlace, nos encontramos con tres comandos a seguir:
 
-```
+```bash
 git clone (url of this repo)
 git submodule init
 git submodule update
 ```
-Y obtuvimos como resultado, lo siguiente: 
-
 ![Figura 1](imagen/Figura1.jpeg)
 
-A continuación, se explica lo que significa cada comando:
+Una vez que se cuentan con todos los archivos del repositorio se puede comenzar con el desarrollo del trabajo práctico:
 
-* `git clone:` Descarga un repositorio completo desde una URL remota.
-* `git submodule init:` Inicializa los submódulos en el repositorio. Los submódulos en Git son repositorios dentro de otros repositorios. A veces, un proyecto principal depende de otros proyectos más pequeños o módulos.
-* `git submodule update:` Actualiza los submódulos a la última versión. Esto descargará los cambios más recientes en los submódulos y los vinculará correctamente al proyecto principal.
+## **1. Crear y correr una imagen booteable**
 
 En la presentación de clase, tenemos el paso a paso de cómo hacer un **MBR (Master Boot Record)** con la creación de una imagen de disco con una instrucción `hlt`, tal como se muestra a continuación:
 
-![Figura 2](imagen/Figura2.jpeg)
+```bash
+printf '\364%509s\125\252' > main.img
+```
 
-Donde el primer comando tiene la siguiente explicación: 
+Este comando para la creación de la imagen main.img está compuesta por: 
 
 * `\364` en octal es equivalente a `0xf4` en hexadecimal, que representa la instrucción `hlt` en lenguaje ensamblador. La instrucción `hlt` detiene la ejecución del procesador.
 * `%509s` producir 509 espacios en blanco. Esto es necesario para completar la imagen hasta el byte 510. Siendo que desde el byte 510 hasta el 511, es donde se almacena la firma de arranque.
 * `\125\252` en octal es equivalente a `0x55 0xAA` en hexadecimal. Estos valores son requisitos para que la imagen sea interpretada como un registro maestro de arranque (MBR) válido.
 
-## OBJETIVOS
+![Figura 2](imagen/Figura2.jpeg)
 
-**1. Correr la imagen: Instalar y correr qemu con la imagen en cuestión**
+Luego de haber creado este sector de arranque se procede a instalar y correr qemu con dicha imagen creada:
 
-```
+```bash
 sudo apt install qemu-system-x86
 qemu-system-x86_64 --drive file=main.img,format=raw,index=0,media=disk`
 ```
-![Figura 3](imagen/Figura3.jpeg)
 
 Una vez que ejecutamos dicho comando, obtuvimos como resultado lo siguiente:
 
-![Figura 4](imagen/Figura4.jpeg)
+![Figura 3](imagen/Figura3.jpeg)
 
 Como conclusión de este primer objetivo, se desarrolló y probó un **Master Boot Record (MBR)** desde cero, utilizando instrucciones en ensamblador y herramientas como `as`, `objdump` y `hd`. A través de la creación de una imagen de disco (`main.img`) con una secuencia específica de bytes y la inclusión de la instrucción `hlt`, se exploró el proceso de configuración y prueba de un MBR funcional.
 
 La ejecución en **QEMU** confirmó que la imagen de disco se carga correctamente, mostrando la secuencia de arranque con _SeaBIOS_ e _iPXE_ sin errores críticos. Esto valida que la imagen generada es reconocida por la máquina virtual.
 
-**2. Ejecutar programas en el hardware: Grabar un pendrive con la imagen a probar, colocar el pen en la pc y colocar el pen en la pc encenderla e indicar que inicie desde la misma**
 
-![Figura 5](imagen/Figura5.jpeg)
+## **2. Grabar la imagen y correrla en HW real**
 
-En nuestro caso específico, al iniciar el proceso de arranque desde la imagen creada, la pantalla permanece en negro y no muestra ninguna salida visual. Además, no es posible interactuar con el sistema a través del teclado, excepto mediante la combinación de `Ctrl + Alt + Supr`, que reinicia el equipo y lo devuelve al estado inicial. Si en ese punto no se elige manualmente una opción de booteo, el sistema procede a arrancar normalmente desde el sistema operativo instalado en el disco.
+Para grabar la imagen de disco de manera precisa, se recomienda utilizar el comando `dd`, ya que permite realizar una copia bit a bit desde un archivo de imagen hacia un dispositivo físico (como un pendrive). En este caso, será necesario escribir los primeros **512 bytes** del archivo en el dispositivo de destino.  
 
-**3. UEFI y Coreboot**
+Antes de ejecutar el comando, debemos asegurarnos de identificar correctamente el dispositivo destino para evitar sobrescribir datos.  
+
+Por este motivo, en primer lugar se debe determinar cual es el driver asignado al dispositivo o pen-drive que se quiere grabar la imagen. Para ello se usará el comando fdisk en combinación con grep para listar solamente las unidades de tipo disco.
+
+```bash
+sudo fdisk -l | grep sd
+```  
+![Figura 4](imagen/Figura4.png)
+
+De esta manera, se identifica que `/dev/sdc1` es el dispositivo buscado, un pendrive de 8 Gb.
+
+Ya identificado el dispositivo se procede a grabar la imagen. 
+
+![Figura 5](imagen/Figura5.png)
+
+Luego de grabar la imagen debemos reiniciar la PC e indicarle que arranque desde el usb booteado para que corra dicha imagen.En nuestro caso específico, al iniciar el proceso de arranque desde la imagen creada, la pantalla permanece en negro y no muestra ninguna salida visual. Además, no es posible interactuar con el sistema a través del teclado, excepto mediante la combinación de `Ctrl + Alt + Supr`, que reinicia el equipo y lo devuelve al estado inicial. Si en ese punto no se elige manualmente una opción de booteo, el sistema procede a arrancar normalmente desde el sistema operativo instalado en el disco.
+
+También, grabaremos una imagen diferente en el pen-drive. Para realizar esto, se hará uso del repositorio clonado en la primera parte del trabajo práctico. 
+Para grabar la imagen `protected_mode.img`, se deberá realizar lo siguiente:
+- Correr el script protected_mode.
+```bash
+./run protected_mode
+```  
+Como ya se instaló qemu preciamente, podemos ejecutar todos los ejemplos del repositorio dado utilizando un script incluido llamado “run”. Este script se encarga de complilar el ejemplo protected_mode.S y correrlo.
+- Grabar nuevamente la imagen.
+
+![Figura 6](imagen/Figura6.png)
+
+![Figura 7](imagen/Figura7.png)
+
+## **3. UEFI y Coreboot**
+
+En esta parte se usará el ensamblador x86 en modo real para escribir "hello world" desde el BIOS usando QEMU.
+
+Para ello haremos uso de los archivos proporcionados en el repositorio clonado:
+
+* **[main.S](./3.hello_world/main.S)**: Código fuente en ensamblador x86 que muestra "hello world" en pantalla utilizando la interrupción de BIOS `0x10` para manejar la salida de texto.
+   - `.code16`: indica que el código debe ejecutarse en modo real de 16 bits.
+   - `mov $msg, %si`: carga la dirección de memoria de la cadena "hello world" en el registro _SI_ (se usa como índice para             correrla). `msg` es un puntero a la cadena de texto.
+   - `mov $0x0e, %ah`: configura el modo de impresión de caracteres mediante la interrupción de video `INT 0x10`. `AH = 0X0E`           indica que la BIOS debe imprimir un carácter en pantalla.
+   - `loop`: define una etiqueta para que el código pueda repetir la impresión de caracteres.
+   - `lodsb`: carga el siguiente byte de la cadena de texto en _AL_ y avanza _SI_ automáticamente. _AL_ contendrá el siguiente          carácter a imprimir.
+   - `or %al, %al`: comprueba si el carácter en _AL_ es `0x00` (fin de la cadena). `or` compara _AL_ consigo mismo. Si el               resultado es cero, significa que terminamos de imprimir.
+   - `jz halt`: si _AL_ es `0`, salta a `halt` para detener la ejecución. `JZ` significa _Jump if Zero_, es decir, si el                resultado anterior es `0`.
+   - `int $0x10`: llama a la interrupción BIOS de video para imprimir el carácter. Usa `AH = 0x0E` para mostrar el carácter en          _AL_ en pantalla.
+   - `jmp loop`: vuelve a `loop` para imprimir el siguiente carácter. Esto repite el proceso hasta que se encuentre el fin de la        cadena.
+   - `halt`: etiqueta de parada cuando terminamos de imprimir "hello world".
+   - `hlt`: detiene completamente la CPU. 
+   - `msg`: define la cadena de texto "hello world" en memoria.
+   - `.asciz "hello world"`: guarda "hello world" en memoria con un carácter nulo (`0x00`) al final. 
+* **[link.ld](./3.hello_world/link.ld)**: Script de linker personalizado para crear una imagen de arranque que se puede cargar desde el sector de arranque de un disco.
+   - `SECTIONS`: este bloque define las secciones en la imagen de salida.
+   - `. = 0x7c00;`: indica que el código se debe cargar en la dirección `0x07C00`, que es donde el BIOS coloca el sector de             arranque.
+   - `.text`: define la sección de código ejecutable.
+   - `__start = .;`: marca el inicio del programa en el archivo binario. 
+   - `(.text)`: incluye todo el contenido de la sección `.text` de todos los archivos de entrada en la imagen de salida.
+   - `. = 0x1FE;`: ubica el puntero en el byte _510_ , dentro de los _512_ bytes del sector de arranque.
+   - `SHORT(0xAA55)`: añade la firma `0xAA55` en los últimos 2 bytes del sector de arranque, lo que indica al BIOS que este             código es un _bootloader válido_.
+
+- En primer lugar, debemos ensabmblar el código fuente
+```bash
+as -g -o main.o main.S
+```
+
+Este paso usa el assembler GNU (`as`) para convertir el código de `main.S` en un archivo objeto (`main.o`), incluyendo símbolos de depuración (`-g`).
+
+- Luego, debemos enlazar el binario
+
+```bash
+ld --oformat binary -o main.img -T link.ld main.o
+```
+
+El linker GNU (`ld`) transforma `main.o` en un binario plano (`--oformat binary`) usando la dirección de carga especificada en `link.ld` (comenzando en `0x7c00`, la dirección en la que el BIOS carga el primer sector del disco). También coloca la firma de arranque `0xAA55`.
+
+![Figura 8](imagen/Figura8.jpeg)
+
+- Una vez obtenido el binario plano, se procede a la ejecución del mismo en una máquina virtual
+
+```bash
+qemu-system-x86_64 -hda main.img
+```
+
+![Figura 9](imagen/Figura9.jpeg)
+
+La imagen muestra el proceso de arranque en **QEMU**, con el firmware SeaBIOS y la ejecución del mensaje "hello world_" al final. Esto indica que el bootloader fue cargado correctamente, por ende, el código ensamblador y el script de enlace están funcionando como se esperaba.
+
+### Preguntas
 
 _**¿Qué es UEFI? ¿Cómo puedo usarlo? Función de ejemplo.**_
 
@@ -153,51 +235,53 @@ Se integra en una variedad de productos, incluyendo computadoras portátiles, de
 
 **Productos que lo incorporan**: Algunas Chromebooks, servidores de alta seguridad, y laptops de marcas especializadas en hardware libre como System76 o Purism.
 
-**4. Pequeño "Hello world"**
+## **4. Linker**
 
-Se propone realizar un pequeño "Hello world", donde estará compuesto por dos archivos:
+A continuación se comparó la salida de objdump y hd sobre main.img. Se verificó que el código ensamblado comienza en la dirección lógica `0x7C00`, como fue especificado en el script de enlazado. Además, se observó que la cadena "hello world" aparece en el binario, y también la firma `55 aa`, lo que confirma que la imagen es un sector de arranque válido.
 
-* **Archivo main.S:** es un programa en ensamblador x86 en modo real (16 bits) que muestra "hello world" en pantalla utilizando la interrupción de BIOS `0x10` para manejar la salida de texto.
+En primer lugar, ejecutamos el comando `objdump -D main.o`, que desensambla el archivo objeto `main.o` para mostrar el código máquina en lenguaje ensamblador. El resultado mostrará direcciones empezando en `0x0000`, pero cabe aclarar que el BIOS carga el código en `0x7C00`.
 
-   - `.code16`: indica que el código debe ejecutarse en modo real de 16 bits.
-   - `mov $msg, %si`: carga la dirección de memoria de la cadena "hello world" en el registro _SI_ (se usa como índice para             correrla). `msg` es un puntero a la cadena de texto.
-   - `mov $0x0e, %ah`: configura el modo de impresión de caracteres mediante la interrupción de video `INT 0x10`. `AH = 0X0E`           indica que la BIOS debe imprimir un carácter en pantalla.
-   - `loop`: define una etiqueta para que el código pueda repetir la impresión de caracteres.
-   - `lodsb`: carga el siguiente byte de la cadena de texto en _AL_ y avanza _SI_ automáticamente. _AL_ contendrá el siguiente          carácter a imprimir.
-   - `or %al, %al`: comprueba si el carácter en _AL_ es `0x00` (fin de la cadena). `or` compara _AL_ consigo mismo. Si el               resultado es cero, significa que terminamos de imprimir.
-   - `jz halt`: si _AL_ es `0`, salta a `halt` para detener la ejecución. `JZ` significa _Jump if Zero_, es decir, si el                resultado anterior es `0`.
-   - `int $0x10`: llama a la interrupción BIOS de video para imprimir el carácter. Usa `AH = 0x0E` para mostrar el carácter en          _AL_ en pantalla.
-   - `jmp loop`: vuelve a `loop` para imprimir el siguiente carácter. Esto repite el proceso hasta que se encuentre el fin de la        cadena.
-   - `halt`: etiqueta de parada cuando terminamos de imprimir "hello world".
-   - `hlt`: detiene completamente la CPU. 
-   - `msg`: define la cadena de texto "hello world" en memoria.
-   - `.asciz "hello world"`: guarda "hello world" en memoria con un carácter nulo (`0x00`) al final. 
+![Figura 10](imagen/Figura10.jpeg)
 
-![Figura 6](imagen/Figura6.jpeg)
+En la imagen se muestra el resultado del comando:
+   - `Dirección 0x00`: indica el inicio del programa en memoria. 
+   - `mov $0xeb40000, %esi`: carga el valor `0xeb40000` en el registro _ESI_. 
+   - `lods`: carga el siguiente byte de la cadena en _AL_ (contiene el primer carácter) y avanza automáticamente _RSI_ (apunta a        la cadena "hello world"). 
+   - `or %al, %al`: compara _AL_ consigo mismo. Si _AL_ es `0x00` (fin de cadena), se activa el flag ZF (Zero Flag).
+   - `je e <halt>`: salta a `halt` si ZF = 1 (cuando _AL_ es 0). Indica que terminamos de imprimir y se debe detener el programa.
+   - `int $0x10`: llama a la interrupción del `BIOS 0x10`, que imprime el contenido de _AL_ en pantalla. 
+   - `jmp 5 <loop>`: salta a la dirección 5, donde comienza la siguiente iteración de impresión. Esto repite el proceso hasta           que `AL = 0x00`.
+   - `hlt`: detiene la CPU. Una vez impreso "hello world", el sistema entra en estado de espera.
+   - `push $0x6f6c6c65`: guarda "hello" en la pila. 
 
-* **Archivo link.ld**: es un script de enlace para crear una imagen de arranque que se puede cargar desde el sector de arranque de un disco.
+Luego, se procede a ver el binario real con `hd main.img`
 
-   - `SECTIONS`: este bloque define las secciones en la imagen de salida.
-   - `. = 0x7c00;`: indica que el código se debe cargar en la dirección `0x07C00`, que es donde el BIOS coloca el sector de             arranque.
-   - `.text`: define la sección de código ejecutable.
-   - `__start = .;`: marca el inicio del programa en el archivo binario. 
-   - `(.text)`: incluye todo el contenido de la sección `.text` de todos los archivos de entrada en la imagen de salida.
-   - `. = 0x1FE;`: ubica el puntero en el byte _510_ , dentro de los _512_ bytes del sector de arranque.
-   - `SHORT(0xAA55)`: añade la firma `0xAA55` en los últimos 2 bytes del sector de arranque, lo que indica al BIOS que este             código es un _bootloader válido_.
+![Figura 11](imagen/Figura11.jpeg)
 
-![Figura 7](imagen/Figura7.jpeg)
+Esta imagen muestra el contenido crudo del binario, en hexadecimal, observando lo siguiente.
 
-A partir de la creación de estos dos archivos, se ejecutan los comandos para compilarlos y linkearlos:
+- La cadena `hello world` en código ASCII hexadecimal.
+- Hacia el final:
+```
+000001f0  ... 0f 1f 00 55 aa
+```
+Esto nos confirma que:
+- Los últimos dos bytes (`55 aa`) son la firma del boot sector que el BIOS busca para decidir si el sector es booteable.
+- Esta firma debe estar en el offset 0x1FE del archivo. En decimal: `0x1FE = 510`, `0x1FF = 511` indica que está correctamente colocada en los offsets `0x1FE` y `0x1FF`, como lo requiere el BIOS para bootear, es decir, al final del sector de 512 bytes.
+- El código fue correctamente alineado desde el comienzo del archivo, como indica el script de enlace con `. = 0x7C00`.
+- También se observan instrucciones `NOP` (como `0F 1F`) insertadas como relleno, para completar el sector de 512 bytes.
 
-![Figura 8](imagen/Figura8.jpeg)
+El BIOS carga el primer sector del disco (512 bytes) en la dirección `0x7C00` de la memoria RAM. Por eso, el script de enlace (link.ld) indica que el código debe ubicarse como si empezara en `0x7C00`, lo que permite que las instrucciones y datos estén en las posiciones correctas al momento de ejecutarse.
 
-Por lo que obtenemos como resultado, lo siguiente: 
+Por último, procedemos a grabar la imagen en el pen-drive y probarla en la pc:
 
-![Figura 9](imagen/Figura9.jpeg)
+![Figura 12](imagen/Figura12.png)
 
-La imagen muestra el proceso de arranque en **QEMU**, con el firmware SeaBIOS y la ejecución del mensaje "hello world_" al final. Esto indica que el bootloader fue cargado correctamente, por ende, el código ensamblador y el script de enlace están funcionando como se esperaba.
+![Figura 13](imagen/Figura12.jpeg)
 
-**5. Linker**
+Aqui se observa como aparece el mensaje “hello world” en la PC booteando desde el pendrive.
+
+### Preguntas
 
 _**¿Qué es un linker? ¿Qué hace?**_
 
@@ -219,32 +303,16 @@ Los motivos por el cuál es necesaria, son los siguientes:
 * Corrección de referencias: si el linker no conoce la ubicación exacta, las direcciones de funciones y variables podrían calcularse incorrectamente.
 * Acceso a hardware y registros: algunos programas, como sistemas operativos o drivers, necesitan ubicarse en direcciones específicas para operar correctamente.
 
-_**Comparando la salida de `objdump` con `hd`, se observa lo siguiente:**_
-
-![Figura 10](imagen/Figura10.jpeg)
-
-La imagen muestra la salida del comando `objdump -D main.o`, que desensambla el archivo objeto `main.o` para mostrar el código máquina en lenguaje ensamblador.
-
-   - `Dirección 0x00`: indica el inicio del programa en memoria. 
-   - `mov $0xeb40000, %esi`: carga el valor `0xeb40000` en el registro _ESI_. 
-   - `lods`: carga el siguiente byte de la cadena en _AL_ (contiene el primer carácter) y avanza automáticamente _RSI_ (apunta a        la cadena "hello world"). 
-   - `or %al, %al`: compara _AL_ consigo mismo. Si _AL_ es `0x00` (fin de cadena), se activa el flag ZF (Zero Flag).
-   - `je e <halt>`: salta a `halt` si ZF = 1 (cuando _AL_ es 0). Indica que terminamos de imprimir y se debe detener el programa.
-   - `int $0x10`: llama a la interrupción del `BIOS 0x10`, que imprime el contenido de _AL_ en pantalla. 
-   - `jmp 5 <loop>`: salta a la dirección 5, donde comienza la siguiente iteración de impresión. Esto repite el proceso hasta           que `AL = 0x00`.
-   - `hlt`: detiene la CPU. Una vez impreso "hello world", el sistema entra en estado de espera.
-   - `push $0x6f6c6c65`: guarda "hello" en la pila. 
-
-El resultado que obtuvimos muestra el desensamblado del código binario del bootloader, confirmando que las instrucciones se han ubicado correctamente en memoria y que el programa sigue la lógica prevista. La dirección inicial `0x0000000000000000` y la etiqueta `<loop-0x5>` sugieren ajustes del linker en la organización del código. Además, la correcta implementación de la interrupción `INT 0x10` indica que la rutina de impresión de "hello world" está funcionando como se espera.
-
-![Figura 11](imagen/Figura11.jpeg)
+_**¿Para que se utiliza la opción --oformat binary en el linker?**_
 
 La opción `--oformat binary` en el linker sirve para generar un archivo binario plano a partir de archivos de código objeto. En lugar de crear un ejecutable con una estructura definida (como ELF o COFF), simplemente combina los datos en un único archivo sin encabezados ni información adicional.
 
 Esto es útil cuando se necesita un binario para cargar directamente en una memoria ROM, un microcontrolador o un dispositivo de arranque, como el _Master Boot Record (MBR)_. Al generar un archivo binario sin sobrecarga, este puede escribirse en un almacenamiento como un USB, permitiendo que el sistema lo reconozca como un bootloader válido.
 
+## **5. Modo Protegido**
 
 
+### Preguntas
 
 
 ---
@@ -255,4 +323,6 @@ El modo protegido representó un salto cualitativo en la arquitectura de los pro
 
 Asimismo, comprender el funcionamiento de tecnologías como UEFI, CSME y Coreboot, así como los procesos de linking a bajo nivel, resulta indispensable para entender el funcionamiento interno de los sistemas actuales y garantizar su seguridad y correcto desempeño.
 
+# Referencias
 
+- [1] https://www.coreboot.org/

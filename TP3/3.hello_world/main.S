@@ -11,5 +11,3 @@ halt:
     hlt
 msg:
     .asciz "hello world"
-
-
