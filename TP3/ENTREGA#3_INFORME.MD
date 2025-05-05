@@ -155,6 +155,45 @@ Se integra en una variedad de productos, incluyendo computadoras portátiles, de
 
 **4. Pequeño "Hello world"**
 
+Se propone realizar un pequeño "Hello world", donde estará compuesto por dos archivos:
+
+* **Archivo main.S:** es un programa en ensamblador x86 en modo real (16 bits) que muestra "hello world" en pantalla utilizando la interrupción de BIOS `0x10` para manejar la salida de texto.
+
+   - `.code16`: indica que el código debe ejecutarse en modo real de 16 bits.
+   - `mov $msg, %si`: carga la dirección de memoria de la cadena "hello world" en el registro _SI_ (se usa como índice para             correrla). `msg` es un puntero a la cadena de texto.
+   - `mov $0x0e, %ah`: configura el modo de impresión de caracteres mediante la interrupción de video `INT 0x10`. `AH = 0X0E`           indica que la BIOS debe imprimir un carácter en pantalla.
+   - `loop`: define una etiqueta para que el código pueda repetir la impresión de caracteres.
+   - `lodsb`: carga el siguiente byte de la cadena de texto en _AL_ y avanza _SI_ automáticamente. _AL_ contendrá el siguiente          carácter a imprimir.
+   - `or %al, %al`: comprueba si el carácter en _AL_ es `0x00` (fin de la cadena). `or` compara _AL_ consigo mismo. Si el               resultado es cero, significa que terminamos de imprimir.
+   - `jz halt`: si _AL_ es `0`, salta a `halt` para detener la ejecución. `JZ` significa _Jump if Zero_, es decir, si el                resultado anterior es `0`.
+   - `int $0x10`: llama a la interrupción BIOS de video para imprimir el carácter. Usa `AH = 0x0E` para mostrar el carácter en          _AL_ en pantalla.
+   - `jmp loop`: vuelve a `loop` para imprimir el siguiente carácter. Esto repite el proceso hasta que se encuentre el fin de la        cadena.
+   - `halt`: etiqueta de parada cuando terminamos de imprimir "hello world".
+   - `hlt`: detiene completamente la CPU. 
+   - `msg`: define la cadena de texto "hello world" en memoria.
+   - `.asciz "hello world"`: guarda "hello world" en memoria con un carácter nulo (`0x00`) al final. 
+
+![Figura 6](imagen/Figura6.jpeg)
+
+* **Archivo link.ld**: es un script de enlace para crear una imagen de arranque que se puede cargar desde el sector de arranque de un disco.
+
+   - `SECTIONS`: este bloque define las secciones en la imagen de salida.
+   - `. = 0x7c00;`: indica que el código se debe cargar en la dirección `0x07C00`, que es donde el BIOS coloca el sector de             arranque.
+   - `.text`: define la sección de código ejecutable.
+   - `__start = .;`: marca el inicio del programa en el archivo binario. 
+   - `(.text)`: incluye todo el contenido de la sección `.text` de todos los archivos de entrada en la imagen de salida.
+   - `. = 0x1FE;`: ubica el puntero en el byte _510_ , dentro de los _512_ bytes del sector de arranque.
+   - `SHORT(0xAA55)`: añade la firma `0xAA55` en los últimos 2 bytes del sector de arranque, lo que indica al BIOS que este             código es un _bootloader válido_.
+
+![Figura 7](imagen/Figura7.jpeg)
+
+A partir de la creación de estos dos archivos, se ejecutan los comandos para compilarlos y linkearlos:
+
+![Figura 8](imagen/Figura8.jpeg)
+
+Por lo que obtenemos como resultado, lo siguiente: 
+
+![Figura 9](imagen/Figura9.jpeg)
 
 
 ## 2. Linker
