@@ -106,6 +106,7 @@ Para grabar la imagen `protected_mode.img`, se deberá realizar lo siguiente:
 ./run protected_mode
 ```  
 Como ya se instaló **QEMU** preciamente, podemos ejecutar todos los ejemplos del repositorio dado utilizando un script incluido llamado “run”. Este script se encarga de complilar el ejemplo `protected_mode.S` y correrlo.
+
 - Grabar nuevamente la imagen.
 
 ![Figura 6](imagen/Figura6.png)
