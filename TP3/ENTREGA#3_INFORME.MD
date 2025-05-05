@@ -86,9 +86,10 @@ La ejecución en **QEMU** confirmó que la imagen de disco se carga correctament
 
 En nuestro caso específico, al iniciar el proceso de arranque desde la imagen creada, la pantalla permanece en negro y no muestra ninguna salida visual. Además, no es posible interactuar con el sistema a través del teclado, excepto mediante la combinación de `Ctrl + Alt + Supr`, que reinicia el equipo y lo devuelve al estado inicial. Si en ese punto no se elige manualmente una opción de booteo, el sistema procede a arrancar normalmente desde el sistema operativo instalado en el disco.
 
-## Preguntas y Respuestas
+**3. Respuestas**
 
-### 1. ¿Qué diferencia principal existe entre el modo real y el modo protegido?
+```
+**¿Qué diferencia principal existe entre el modo real y el modo protegido?**
 
 En **modo real**, el procesador puede acceder directamente a un espacio de memoria de hasta 1 MB, utilizando un direccionamiento basado en segmentos de 16 bits. No existen mecanismos de protección entre procesos, lo que permite que cualquier programa pueda sobrescribir memoria ajena.
 
@@ -97,7 +98,7 @@ En **modo protegido**, en cambio, se introduce un esquema de gestión de memoria
 - Se implementan niveles de privilegio (rings) para proteger el acceso a la memoria y los recursos del sistema.
 - Se utilizan estructuras como la **GDT** (Global Descriptor Table) para definir segmentos y sus permisos.
 
-### 2. ¿Qué estructuras principales maneja el modo protegido para la administración de memoria?
+**¿Qué estructuras principales maneja el modo protegido para la administración de memoria?**
 
 Las estructuras principales son:
 - **GDT (Global Descriptor Table)**: define segmentos globales para todo el sistema.
@@ -106,7 +107,7 @@ Las estructuras principales son:
 
 Estas estructuras permiten separar de manera lógica y segura los espacios de memoria para cada proceso.
 
-### 3. ¿Qué es la GDT y para qué sirve?
+**¿Qué es la GDT y para qué sirve?**
 
 La **GDT** es una tabla que contiene descriptores de segmentos. Cada descriptor define un segmento con:
 - Su dirección base.
@@ -115,11 +116,11 @@ La **GDT** es una tabla que contiene descriptores de segmentos. Cada descriptor 
 
 El procesador utiliza la GDT para validar los accesos a memoria y asegurar que cada programa trabaje en su espacio de direcciones asignado.
 
-### 4. ¿Cómo se identifica en el procesador que se está trabajando en modo protegido?
+**¿Cómo se identifica en el procesador que se está trabajando en modo protegido?**
 
 Se identifica a través del bit **PE (Protection Enable)** ubicado en el registro **CR0**. Cuando este bit está activo, el procesador interpreta las instrucciones y la memoria de acuerdo con las reglas del modo protegido.
 
-### 5. ¿Qué sucede si se intenta acceder a un segmento de memoria de manera no autorizada en modo protegido?
+**¿Qué sucede si se intenta acceder a un segmento de memoria de manera no autorizada en modo protegido?**
 
 El procesador genera una excepción o "fault". Estas excepciones son manejadas a través de un sistema de interrupciones, donde un manejador específico (generalmente definido en la IDT) se encarga de gestionar el error de acceso, que puede llevar a terminar el proceso que lo causó o intentar una recuperación controlada.
 
