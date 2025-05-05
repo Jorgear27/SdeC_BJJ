@@ -52,7 +52,34 @@ A continuación, se explica lo que significa cada comando:
 * `git submodule init:` Inicializa los submódulos en el repositorio. Los submódulos en Git son repositorios dentro de otros repositorios. A veces, un proyecto principal depende de otros proyectos más pequeños o módulos.
 * `git submodule update:` Actualiza los submódulos a la última versión. Esto descargará los cambios más recientes en los submódulos y los vinculará correctamente al proyecto principal.
 
+En la presentación de clase, tenemos el paso a paso de cómo hacer un **MBR (Master Boot Record)** con la creación de una imagen de disco con una instrucción `hlt`, tal como se muestra a continuación:
 
+![Figura 2](imagen/Figura2.jpeg)
+
+Los comandos que se observan en la imagen anterior, tienen el siguiente significado:
+
+```
+# Crear un archivo llamado main.img y escribir una secuencia específica de bytes
+printf '\364%509s\125\252' > main.img
+
+Donde:
+
+* `\364` en octal es equivalente a `0xf4` en hexadecimal, que representa la instrucción `hlt` en lenguaje ensamblador. La instrucción `hlt` detiene la ejecución del procesador.
+* `%509s` producir 509 espacios en blanco. Esto es necesario para completar la imagen hasta el byte 510. Siendo que desde el byte 510 hasta el 511, es donde se almacena la firma de arranque.
+* `\125\252` en octal es equivalente a `0x55 0xAA` en hexadecimal. Estos valores son requisitos para que la imagen sea interpretada como un registro maestro de arranque (MBR) válido.
+
+# Crear un archivo llamado a.S y escribir la instrucción "hlt" en él
+echo hlt > a.S
+
+# Ensamblar el archivo a.S y generar un archivo objeto llamado a.o
+as -o a.o a.S
+
+# Desensamblar el archivo objeto a.o y mostrar el código ensamblador original
+objdump -S a.o
+
+# Mostrar el contenido hexadecimal del archivo main.img
+hd main.img
+``` 
 
 ## OBJETIVOS
 
