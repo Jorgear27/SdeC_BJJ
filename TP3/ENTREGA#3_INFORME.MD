@@ -277,7 +277,7 @@ Por último, procedemos a grabar la imagen en el pen-drive y probarla en la pc:
 
 ![Figura 12](imagen/Figura12.png)
 
-![Figura 13](imagen/Figura12.jpeg)
+![Figura 13](imagen/Figura13.jpeg)
 
 Aqui se observa como aparece el mensaje “hello world” en la PC booteando desde el pendrive.
 
