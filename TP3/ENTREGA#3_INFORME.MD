@@ -80,6 +80,12 @@ Como conclusión de este primer objetivo, se desarrolló y probó un **Master Bo
 
 La ejecución en **QEMU** confirmó que la imagen de disco se carga correctamente, mostrando la secuencia de arranque con _SeaBIOS_ e _iPXE_ sin errores críticos. Esto valida que la imagen generada es reconocida por la máquina virtual.
 
+2. Ejecutar programas en el hardware: Grabar un pendrive con la imagen a probar, colocar el pen en la pc y colocar el pen en la pc encenderla e indicar que inicie desde la misma.
+
+![Figura 5](imagen/Figura5.jpeg)
+
+En nuestro caso específico, al iniciar el proceso de arranque desde la imagen creada, la pantalla permanece en negro y no muestra ninguna salida visual. Además, no es posible interactuar con el sistema a través del teclado, excepto mediante la combinación de `Ctrl + Alt + Supr`, que reinicia el equipo y lo devuelve al estado inicial. Si en ese punto no se elige manualmente una opción de booteo, el sistema procede a arrancar normalmente desde el sistema operativo instalado en el disco.
+
 ## Preguntas y Respuestas
 
 ### 1. ¿Qué diferencia principal existe entre el modo real y el modo protegido?
