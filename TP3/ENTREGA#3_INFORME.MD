@@ -44,7 +44,7 @@ git submodule update
 ```
 Y obtuvimos como resultado, lo siguiente: 
 
-![Figura 1](imagenes/Figura1.png)
+![Figura 1](imagen/Figura1.jpeg)
 
 A continuación, se explica lo que significa cada comando:
 
