@@ -46,7 +46,7 @@ Este proceso nos proporciona el entorno adecuado para comenzar la implementació
 
 ## Desafío 1
 
-_¿Qué es checkinstall y para qué sirve?_
+<u>_¿Qué es checkinstall y para qué sirve?_<u>
 
 **Checkinstall** es un programa para sistemas operativos tipo _Unix_ que facilita la instalación y desinstalación de software compilado desde el código fuente. Permite que el software instalado desde el código fuente sea gestionado por un sistema de gestión de paquetes, como `apt` o `yum`, haciendo que sea más fácil actualizar o eliminar el software en el futuro. 
 En esencia, **Checkinstall** actúa como un puente entre el proceso de compilación de software desde el código fuente y los sistemas de gestión de paquetes. En lugar de simplemente copiar los archivos a su ubicación final, Checkinstall crea un paquete (como un archivo `.deb` o `.rpm`) que luego puede ser instalado y gestionado por el sistema de gestión de paquetes. 
