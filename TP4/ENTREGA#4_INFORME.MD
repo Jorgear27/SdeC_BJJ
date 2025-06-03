@@ -92,3 +92,4 @@ Esto asegura que el paquete generado indique que necesita `libc6` y `libncurses5
 Una vez completado el proceso, el paquete estará listo para ser instalado y administrado con el gestor de paquetes del sistema.
 
 ### _Uso de checkinstall para empaquetar un hello world_
+
