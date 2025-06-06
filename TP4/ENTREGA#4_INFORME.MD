@@ -38,9 +38,7 @@ fork https://gitlab.com/sistemas-de-computacion-unc/kenel-modules.git
 git clone (su propia url… empieza con SU nombre de usuario)
 sudo apt-get install build-essential checkinstall kernel-package linux-source
 ```
-Tras ejecutar estos comandos, el sistema descargará y configurará las herramientas necesarias para el desarrollo de módulos del núcleo. En la siguiente imagen, se muestra un ejemplo de la salida obtenida al realizar la clonación del repositorio y la instalación de las dependencias:
-
-![Figura 1](imagen/Figura1.jpeg)
+Tras ejecutar estos comandos, el sistema descargará y configurará las herramientas necesarias para el desarrollo de módulos del núcleo. 
 
 Este proceso nos proporciona el entorno adecuado para comenzar la implementación del módulo correspondiente dentro de la carpeta `tp4`, asegurando que contamos con todas las herramientas necesarias para su desarrollo y prueba.
 
@@ -92,4 +90,22 @@ Esto asegura que el paquete generado indique que necesita `libc6` y `libncurses5
 Una vez completado el proceso, el paquete estará listo para ser instalado y administrado con el gestor de paquetes del sistema.
 
 ### _Uso de checkinstall para empaquetar un hello world_
+
+Este informe describe el proceso de empaquetado de un programa simple en C, utilizando `checkinstall` para generar un paquete `.deb`. El objetivo es instalar el programa de manera organizada, permitiendo su fácil administración y desinstalación.
+
+En primer lugar, se creó un archivo llamado `helloWorld.c` con un programa básico que imprime un mensaje en la consola:
+
+![Figura 1](imagenes/Figura1.jpeg)
+
+Luego, para automatizar la compilación e instalación, se creó un `Makefile` con las siguientes reglas:
+
+![Figura 2](imagenes/Figura2.jpeg)
+
+Este archivo permite compilar (`make`), instalar (`make install`) y limpiar (`make clean`) el programa. 
+
+Para empaquetar el programa **Hello World** utilizando `checkinstall`, primero se compila el código fuente con `make`, lo que genera el ejecutable `helloWorld`. Luego, en lugar de instalarlo manualmente, se usa `checkinstall`, que crea un paquete `.deb` compatible con sistemas **Debian/Ubuntu**. Durante el proceso, se solicita una descripción del paquete y se generan archivos importantes, como `description-pak`, que contiene información del programa, y el `.deb`, que facilita su instalación y gestión.
+
+Una vez generado el paquete, se instala con `dpkg -i`, permitiendo que el programa pueda ejecutarse desde cualquier ubicación en la terminal. Si en algún momento es necesario desinstalarlo, `dpkg -r` elimina el paquete sin dejar archivos residuales en el sistema.
+
+![Figura 3](imagenes/Figura3.jpeg)
 
