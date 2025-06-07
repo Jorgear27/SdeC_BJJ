@@ -29,7 +29,7 @@ Dado que no se dispone de una Raspberry Pi física, se utilizará QEMU para emul
 
 ---
 
-# DESARROLLO
+# Desarrollo
 
 En primer lugar, se debe crear y configurar el entorno de QEMU para poder simular el hardware de una Raspberry Pi. Para realizar dicha tarea se hizo uso de una guia de instalación, referencidada en [1].
 
@@ -103,7 +103,7 @@ Podemos averiguar el tamaño de la imagen actual de la siguiente forma:
 CURRENT_SIZE=$(stat -c%s "2023-05-03-raspios-bullseye-arm64.img")
 ```
 
-Y luego se puede ejecutar un pequeño script en python para la próxima potencia de 2 más cercana:
+Y luego se puede ejecutar un pequeño script en python para encontrar la próxima potencia de 2 más cercana:
 
 ```python
 import math
@@ -169,7 +169,7 @@ Se creó un script que simula dos señales digitales diferentes en los pines GPI
 - **GPIO1** genera una señal cuadrada rápida (1 Hz).
 - **GPIO2** genera pulsos más largos y menos frecuentes.
 
-### Script: [signal_simulator.sh](url)
+### Script: [signal_simulator.sh](https://github.com/Jorgear27/SdeC_BJJ/blob/main/TP5/signal-driver_TP/signal_simulator.sh)
 
 1. **Exporta los GPIOs 1 y 2**  
 ```bash
@@ -203,7 +203,7 @@ chmod +x signal_simulator.sh
 
 ## 3. Desarrollo del CDD (Character Device Driver)
 
-### C Driver: [signlas_driver.c](url)
+### C Driver: [signlas_driver.c](https://github.com/Jorgear27/SdeC_BJJ/blob/main/TP5/signal-driver_TP/signals_driver.c)
 
 Se desarrolló este driver que crea un dispositivo de caracteres que permite leer el estado de dos GPIOs alternables desde espacio de usuario, usando operaciones estándar de archivo. Se compila con un Makefile y se inserta/verifica con comandos estándar de módulos de Linux.
 
@@ -253,7 +253,7 @@ Entonces a modo de resumen, el vínculo entre CDD y CDF se realiza mediante la r
 [Hardware GPIO]
 ```
 
-#### _La compilación del módulo la realizamos mediante el [Makefile](url) presente en el repositorio_
+#### _La compilación del módulo la realizamos mediante el [Makefile](https://github.com/Jorgear27/SdeC_BJJ/blob/main/TP5/signal-driver_TP/Makefile) presente en el repositorio_
 
 ### **Inserción del módulo**
 
@@ -303,7 +303,7 @@ Esta separación permitió mantener el diseño modular y funcional del sistema, 
 
 Este script es una aplicación de usuario que permite seleccionar y adquirir una de dos señales digitales disponibles a través de un driver de dispositivo de caracteres (CDD) en `/dev/cdd_signals`. Los datos adquiridos se almacenan en un archivo CSV para su posterior análisis o graficado.
 
-#### Código del archivo [signals_reader.py](url):
+#### Código del archivo [signals_reader.py](https://github.com/Jorgear27/SdeC_BJJ/blob/main/TP5/signal-driver_TP/signal_reader.py):
 
 **Funcionamiento:**
 
@@ -335,7 +335,7 @@ scp -P 2222 pi@localhost:/home/pi/signals.csv .
 
 Este script permite visualizar gráficamente los datos adquiridos y almacenados en `signals.csv`, facilitando el análisis visual de la señal sensada.
 
-#### Código del archivo [signals_plotter.py](url):
+#### Código del archivo [signals_plotter.py](https://github.com/Jorgear27/SdeC_BJJ/blob/main/TP5/signal-driver_TP/signal_plotter.py):
 
 **Funcionamiento:**
 
