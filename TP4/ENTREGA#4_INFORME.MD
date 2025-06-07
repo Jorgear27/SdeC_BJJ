@@ -255,4 +255,37 @@ Y para verificar los módulos del kernel activos:
 ```bash
 lsmod
 ```
+## PRÁCTICO
+
+Para esta primera parte, al navegar a la carpeta `module`, se debe instanciar el modulo propuesto, y para ello se corre el siguiente comando:
+
+```bash
+sudo insmod mimodulo.ko
+```
+Y luego, al ejecutar `sudo dmesg > dmesg_output.txt` se obtiene lo siguiente:
+
+![Figura 5](imagenes/Figura5.jpeg)
+
+Para corroborar que el modulo se cargo correctamente, se ejecuta la instruccion `lsmod | grep mod`, encontrandose lo siguiente:
+
+![Figura 6](imagenes/Figura6.jpeg)
+
+Ahora, se ejecuta la instruccion `sudo rmmod mimodulo`, cuyo objetivo es quitar el modulo del kernel, y se obtiene entonces asi:
+
+![Figura 7](imagenes/Figura7.jpeg)
+
+Al llamar a la instruccion `modinfo mimodulo.ko` se obtiene:
+
+![Figura 8](imagenes/Figura8.jpeg)
+
+Al ejecutar `cat /proc/modules | grep mod` se encuentra:
+
+![Figura 9](imagenes/Figura9.jpeg)
+
+**Lo que corrobora que el modulo se descargo del kernel correctamente.**
+
+
+
+
+
 
