@@ -165,3 +165,15 @@ _Ejemplo:_ El módulo `e1000` es un controlador de red para ciertos adaptadores 
 
 ### _Espacio de usuario o espacio del kernel_
 
+El **espacio de usuario** y el **espacio del kernel** son dos áreas diferenciadas en el sistema operativo que gestionan la ejecución de procesos y la interacción con el hardware:
+
+* **ESPACIO DE USUARIO:** Es donde se ejecutan los programas y procesos que no forman parte del núcleo del sistema. Sus características incluyen:
+
+**1. Acceso restringido al hardware:** Los procesos no pueden acceder directamente a la memoria o dispositivos sin pasar por el kernel.
+
+**2. Ejecución de aplicaciones:** Programas como editores de texto, navegadores y terminales funcionan en este espacio.
+
+**3. Mayor seguridad y estabilidad:** Al estar aislados del kernel, errores en programas de usuario no afectan la estabilidad del sistema.
+
++Ejemplo:_ Un proceso como `nano` o `firefox` se ejecuta en el espacio de usuario.
+
