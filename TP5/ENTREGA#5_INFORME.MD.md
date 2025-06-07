@@ -121,7 +121,7 @@ Una vez que tenemos todo estamos listo para iniciar QEMU haciendo uso de lo sigu
 
 - imagen con el resize
 - kernel y device tree extraidos
-- Raspberry Pi 3B+ with 1GB of RAM and 4 cores
+- Raspberry Pi 3B+ con 1GB de RAM y 4 nucleos
 - configuración de la consola serial
 - configuración del network para conectar SSH via el USB network adapter emulado
 
@@ -156,7 +156,7 @@ scp -P 2222 signal_reader.py pi@localhost:/home/pi/
 scp -P 2222 Makefile pi@localhost:/home/pi/
 ```
 
-Caber recordar que se debe hacer uso de la contraseña configurada en el 1.3.
+Caber recordar que se debe hacer uso de la contraseña configurada en 1.3.
 
 Luego, en la Raspberry emulada ya se pueden ver los archivos en home:
 
