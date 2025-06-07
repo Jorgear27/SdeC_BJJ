@@ -186,3 +186,73 @@ _Ejemplo:_ Un proceso como `nano` o `firefox` se ejecuta en el espacio de usuari
 **3. Ejecuta módulos del kernel:** Drivers y extensiones del sistema operan en este espacio para interactuar con hardware específico.
 
 _Ejemplo:_ Un módulo del kernel como `ext4.ko` gestiona el sistema de archivos `EXT4` en Linux.
+
+### _Espacio de datos_
+
+El **espacio de datos** se refiere al área de memoria donde un programa o el kernel almacenan y manipulan información. Dependiendo de si hablamos del espacio de usuario o espacio del kernel, los datos se gestionan de manera distinta:
+
+**ESPACIO DE DATOS EN EL ESPACIO DE USUARIO:** 
+
+1. Contiene variables y estructuras de datos usadas por programas que se ejecutan en el sistema.
+
+2. Se gestiona mediante la memoria virtual, lo que impide que los programas accedan directamente al hardware.
+
+3. Permite la separación de procesos, garantizando que cada aplicación tenga su propio espacio aislado.
+
+_Ejemplo:_ Cuando un programa de usuario como `firefox` carga una página web, almacena los datos en su espacio de usuario.
+
+**ESPACIO DE DATOS EN EL ESPACIO DEL KERNEL:** 
+
+1. Contiene estructuras críticas como la tabla de procesos, buffers de entrada/salida y configuraciones del sistema.
+
+2. Puede acceder directamente a la memoria física, sin restricciones de protección de procesos.
+
+3. Se utiliza para almacenar información sobre módulos del kernel, dispositivos y administración de recursos.
+
+_Ejemplo:_ Cuando el kernel maneja memoria RAM, gestiona las páginas en el espacio de datos del kernel, optimizando la administración de recursos.
+
+### _Drivers_
+
+Un **driver** es un software que actúa como puente entre el sistema operativo y un dispositivo físico. Su función es traducir las instrucciones de alto nivel del sistema en comandos específicos para el hardware. Sin los drivers, el sistema operativo no podría interactuar con los componentes físicos de la computadora.
+
+En Linux, los drivers generalmente se implementan como módulos del kernel, los cuales pueden cargarse y descargarse en tiempo de ejecución para ampliar las funcionalidades del sistema sin necesidad de recompilar el kernel.
+
+_Ejemplo de drivers comunes en Linux:_
+
+* **Drivers de red (`e1000`, `rtl8139`):** Controlan tarjetas de red y permiten la conexión a internet.
+
+* **Drivers de almacenamiento (`nvme`, `sda`):** Gestionan discos duros, SSDs y memorias USB.
+
+* **Drivers gráficos (`i915`, `nvidia`):** Controlan tarjetas gráficas para renderizado de pantalla.
+
+_Tipos de dispositivos en `/dev`_
+
+Dentro de `/dev`, los dispositivos se dividen en dos grandes categorías:
+
+**1. Dispositivos de bloque (b):** Almacenan información en bloques y permiten operaciones como lectura y escritura en discos duros y particiones. 
+Ejemplo: `/dev/sda` (primer disco duro), `/dev/mmcblk0` (tarjeta SD).
+
+**2. Dispositivos de carácter (c):** Procesan datos byte a byte y se utilizan para teclados, ratones y puertos serie. 
+Ejemplo: `/dev/ttyS0` (puerto serie), `/dev/input/event0` (entrada del teclado).
+
+_Otros archivos relevantes:_
+
+* `/dev/null`: Dispositivo especial que descarta cualquier dato que se le envíe.
+
+* `/dev/random` y `/dev/urandom`: Generadores de números aleatorios.
+
+* `/dev/fb0`: Representa el framebuffer de la pantalla.
+
+Cuando se carga un módulo del kernel que contiene un driver, este puede generar un nuevo archivo dentro de `/dev`, permitiendo a los programas acceder al hardware a través de ese archivo. Por ejemplo, al conectar una unidad USB, el sistema la detecta y crea un archivo como `/dev/sdb`.
+
+Para explorar los dispositivos disponibles, se puede ejecutar:
+
+```bash
+ls -l /dev
+```
+Y para verificar los módulos del kernel activos:
+
+```bash
+lsmod
+```
+
