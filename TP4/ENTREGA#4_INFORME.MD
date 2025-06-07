@@ -139,5 +139,29 @@ Implementar estas buenas prácticas no solo mejora la gestión de software empaq
 
 ### _¿Qué funciones tiene disponible un programa y un módulo?_
 
+En términos generales, un **programa** y un **módulo** tienen funciones distintas dependiendo de su propósito dentro del sistema. Las diferencias que se presentan entre ambos son las siguientes:
+
+* **PROGRAMA:** Un programa es una aplicación ejecutable que interactúa con el usuario y realiza tareas específicas. Sus funciones pueden incluir:
+
+1. Ejecutar operaciones de usuario (por ejemplo, leer y escribir archivos, procesar datos).
+
+2. Interactuar con el sistema operativo usando llamadas a funciones del sistema.
+
+3. Gestionar memoria y procesos dentro de su ejecución.
+
+4. Mostrar salida en la terminal o en una interfaz gráfica.
+
+_Ejemplo:_ Un editor de texto como `nano` es un programa que permite modificar archivos.
+
+* **MÓDULO:** Un módulo del kernel es un componente del sistema operativo que extiende sus funcionalidades sin necesidad de recompilar el kernel. Sus funciones pueden ser:
+
+1. Proporcionar controladores de hardware (como módulos para manejar periféricos USB, gráficos, red, etc.).
+
+2. Extender las capacidades del kernel (por ejemplo, agregar compatibilidad con sistemas de archivos).
+
+3. Optimizar la gestión de recursos del sistema sin afectar el núcleo central del sistema.
+
+_Ejemplo:_ El módulo `e1000` es un controlador de red para ciertos adaptadores Ethernet.
+
 ### _Espacio de usuario o espacio del kernel_
 
