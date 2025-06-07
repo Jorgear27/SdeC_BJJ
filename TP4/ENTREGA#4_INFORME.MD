@@ -175,5 +175,14 @@ El **espacio de usuario** y el **espacio del kernel** son dos áreas diferenciad
 
 **3. Mayor seguridad y estabilidad:** Al estar aislados del kernel, errores en programas de usuario no afectan la estabilidad del sistema.
 
-+Ejemplo:_ Un proceso como `nano` o `firefox` se ejecuta en el espacio de usuario.
+_Ejemplo:_ Un proceso como `nano` o `firefox` se ejecuta en el espacio de usuario.
 
+* **ESPACIO DEL KERNEL:** Es el área del sistema donde el kernel opera y controla los recursos del hardware. Sus características son:
+
+**1. Acceso directo al hardware:** El kernel maneja memoria, dispositivos y procesos sin restricciones.
+
+**2. Gestión del sistema:** Controla el uso de la CPU, la planificación de procesos y la administración de memoria.
+
+**3. Ejecuta módulos del kernel:** Drivers y extensiones del sistema operan en este espacio para interactuar con hardware específico.
+
+_Ejemplo:_ Un módulo del kernel como `ext4.ko` gestiona el sistema de archivos `EXT4` en Linux.
