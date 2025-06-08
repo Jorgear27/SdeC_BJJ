@@ -330,9 +330,9 @@ Cada campo en la salida tiene un significado específico:
 
 * `(OE)`: Banderas del módulo:
 
-      * `O`: Indica que es un módulo oficial del kernel.
+`O`: Indica que es un módulo oficial del kernel.
 
-      * `E`: Señala que el módulo está en un estado de error.
+`E`: Señala que el módulo está en un estado de error.
 
 
 
