@@ -257,34 +257,82 @@ lsmod
 ```
 ## PRÁCTICO
 
-Para esta primera parte, al navegar a la carpeta `module`, se debe instanciar el modulo propuesto, y para ello se corre el siguiente comando:
-
-```bash
-sudo insmod mimodulo.ko
-```
-Y luego, al ejecutar `sudo dmesg > dmesg_output.txt` se obtiene lo siguiente:
+En primer lugar ejecutamos el comando `make` en la carpeta correspondiente:
 
 ![Figura 5](imagenes/Figura5.jpeg)
 
-Para corroborar que el modulo se cargo correctamente, se ejecuta la instruccion `lsmod | grep mod`, encontrandose lo siguiente:
+En sistemas Linux, el kernel puede extender sus funcionalidades mediante módulos que se cargan en tiempo de ejecución según las necesidades del sistema. Un módulo del kernel es una pieza de código que actúa como una extensión, proporcionando compatibilidad con hardware específico, sistemas de archivos adicionales, funciones de seguridad o características personalizadas sin requerir la recompilación completa del kernel.
+
+Para insertar un módulo en el kernel, se utiliza la herramienta `insmod`, un comando que carga el archivo de módulo (`mimodulo.ko`) en la estructura del kernel. La ejecución de este comando **instruye al sistema a integrar el módulo `mimodulo.ko` en el kernel**, lo que le permite realizar funciones específicas dentro del sistema operativo. Este proceso es fundamental cuando se requieren nuevos controladores de hardware o mejoras en las funcionalidades del núcleo sin necesidad de reiniciar el sistema. 
+Dado que la manipulación del kernel puede afectar el funcionamiento del sistema, es imprescindible contar con privilegios de superusuario al ejecutar `insmod`, lo que se logra mediante `sudo`. Sin estos permisos, el sistema impide la carga de módulos por seguridad, evitando que usuarios sin autorización realicen modificaciones críticas en el núcleo del sistema.
 
 ![Figura 6](imagenes/Figura6.jpeg)
 
-Ahora, se ejecuta la instruccion `sudo rmmod mimodulo`, cuyo objetivo es quitar el modulo del kernel, y se obtiene entonces asi:
+Luego, al ejecutar el comando `sudo dmesg`, se obtiene lo siguiente (Se puede observar una gran cantidad de codigo,pero se adjunta una parte de él):
 
 ![Figura 7](imagenes/Figura7.jpeg)
 
-Al llamar a la instruccion `modinfo mimodulo.ko` se obtiene:
-
 ![Figura 8](imagenes/Figura8.jpeg)
 
-Al ejecutar `cat /proc/modules | grep mod` se encuentra:
+El comando `dmesg` en Linux permite visualizar los mensajes generados por el kernel, ofreciendo información clave sobre el funcionamiento del sistema, el hardware conectado y posibles errores. Su uso es esencial para la depuración, especialmente en el arranque y en eventos como conexiones o desconexiones de dispositivos.
+
+Dentro de los registros de `dmesg`, algunos mensajes destacan por su relevancia:
+
+* `mimodulo: module verification failed`: Este aviso indica que el módulo `mimodulo.ko` no pudo ser verificado debido a la falta de firma o clave requerida. Esto ocurre cuando el módulo no coincide con la firma usada por el kernel. Para solucionarlo, se puede firmar utilizando la herramienta `sign-file` del árbol de código fuente del kernel junto con una clave privada (`CONFIG_MODULE_SIG_KEY`). Si no se define una clave personalizada, el sistema usará `certs/signing_key.pem`.
+
+* `[UFW BLOCK]`: Este mensaje proviene del firewall _UFW (Uncomplicated Firewall)_ y señala que ciertos paquetes de red han sido bloqueados. La información incluye detalles como la interfaz de red utilizada (`IN=wlp3s0`), direcciones MAC y IP de origen y destino, y la longitud del paquete bloqueado. Este tipo de registros son útiles para analizar intentos de conexión y posibles amenazas.
+
+Además, se identificaron eventos relacionados con la conectividad y el estado del sistema:
+
+* `wlp3s0: deauthenticating by local choice`: Indica que el dispositivo de red inalámbrica (`wlp3s0`) se ha desconectado voluntariamente de la red.
+
+* `PM: suspend entry (deep)`: Señala que el sistema ha entrado en suspensión profunda (S3 o suspensión a RAM).
+
+* `Filesystems sync: 0.025 seconds`: Confirma que los sistemas de archivos han sido sincronizados antes de la suspensión para evitar pérdida de datos.
+
+* `Freezing user space processes`: Indica que los procesos del espacio de usuario han sido "congelados" temporalmente como parte del proceso de suspensión.
+
+* `OOM killer disabled`: Muestra que el sistema ha desactivado el mecanismo "OOM Killer", que normalmente elimina procesos cuando la memoria es insuficiente.
+
+`printk: Suspending console(s)`: Notifica que las consolas del sistema han sido suspendidas. Se puede evitar esto usando `no_console_suspend` para depuración.
+
+En sistemas Linux, los módulos del kernel permiten extender las funcionalidades del sistema sin necesidad de recompilar el núcleo. Para verificar qué módulos están activos, se utilizan herramientas como `lsmod` y `cat /proc/modules`, que muestran información relevante sobre los módulos cargados.
+
+Ejecutando el comando `lsmod | grep mod`, se obtiene una salida como:
 
 ![Figura 9](imagenes/Figura9.jpeg)
 
-**Lo que corrobora que el modulo se descargo del kernel correctamente.**
+Aquí, la información proporcionada indica:
 
+* `mimodulo`: Nombre del módulo cargado en el kernel.
 
+* `16384`: Tamaño del módulo en bytes.
+
+* `0`: Cantidad de dependencias; en este caso, ningún otro módulo depende de `mimodulo`.
+
+El comando `lsmod` lista los módulos actualmente en ejecución, mientras que `grep mod` filtra la salida para mostrar solo los módulos que contienen la cadena `"mod"` en su nombre.
+
+Para obtener más detalles sobre los módulos cargados, se ejecuta el siguiente comando generando una salida similar a: 
+
+![Figura 10](imagenes/Figura10.jpeg)
+
+Cada campo en la salida tiene un significado específico:
+
+* `mimodulo`: Nombre del módulo cargado.
+
+* `16384`: Tamaño del módulo en bytes.
+
+* `0`: Número de instancias activas (0 significa que está cargado pero no en uso).
+
+* `Live`: Indica que el módulo está activo en el sistema.
+
+* `0x0000000000000000`: Dirección de memoria donde está ubicado el módulo.
+
+* `(OE)`: Banderas del módulo:
+
+      * `O`: Indica que es un módulo oficial del kernel.
+
+      * `E`: Señala que el módulo está en un estado de error.
 
 
 
