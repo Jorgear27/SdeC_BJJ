@@ -566,9 +566,9 @@ sudo mokutil --import sign_key.x509
 
 Luego de registrar la clave, hay que reiniciar el sistema y seguir las instrucciones del asistente para inscribir la clave con MOK como vemos a continuación:
 
-![Figura 25](imagenes/Figura25.jpeg)
-![Figura 26](imagenes/Figura26.jpeg)
-![Figura 27](imagenes/Figura27.jpeg)
+![Figura 25](imagenes/Figura25.png)
+![Figura 26](imagenes/Figura26.png)
+![Figura 27](imagenes/Figura27.png)
 
 **3. Firma del módulo**
 
