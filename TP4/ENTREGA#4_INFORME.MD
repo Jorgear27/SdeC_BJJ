@@ -27,6 +27,8 @@ El lenguaje C es poderoso, flexible y esencial en el desarrollo de sistemas oper
 
 En este informe exploraremos qué son los módulos del núcleo, cómo funcionan y por qué son fundamentales en la arquitectura del kernel. Desde los controladores de dispositivos hasta las extensiones de funcionalidad, estos módulos nos permiten adaptar el sistema a nuestras necesidades de manera eficiente y dinámica. Pero con gran poder viene gran responsabilidad: un solo error puede comprometer la estabilidad del sistema. Por eso, comprender su diseño y funcionamiento es esencial para cualquier desarrollador que busque optimizar y expandir el alcance del kernel de Linux.
 
+---
+
 # Desarrollo
 
 Para el desarrollo y compilación de módulos del núcleo en Linux, es imprescindible contar con un sistema operativo Linux instalado junto con sus fuentes o, al menos, los headers correspondientes. La descarga de estos archivos puede tomar algunos minutos, dependiendo del ancho de banda disponible en la conexión a internet.
@@ -255,7 +257,7 @@ Y para verificar los módulos del kernel activos:
 ```bash
 lsmod
 ```
-## PRÁCTICO
+## Experiencia práctica
 
 En primer lugar ejecutamos el comando `make` en la carpeta correspondiente:
 
@@ -524,3 +526,165 @@ Cuando ocurre un `segmentation fault`, el sistema operativo recibe una interrupc
 Desde la _perspectiva del programa_, un `segmentation fault` generalmente resulta en una interrupción inmediata de la ejecución, generando un informe de error. Para identificar la causa del fallo, los desarrolladores pueden utilizar herramientas de depuración como `gdb`, que permiten examinar el estado del programa al momento del error y detectar las líneas de código responsables.
 
 En conclusión, las violaciones de segmentación son errores críticos que afectan la estabilidad de los programas y pueden ser causadas por accesos incorrectos a la memoria. Comprender cómo el kernel maneja estos errores y cómo los desarrolladores pueden depurarlos es clave para mejorar la estabilidad y seguridad del software.
+
+### _Firma de módulo kernel_
+
+Ahora se va a realizar el proceso de firma de módulos del kernel en Linux, y su posterior carga y descarga en un sistema con Secure Boot habilitado, garantizando su legitimidad mediante claves criptográficas. 
+
+En primer lugar se diseño un módulo simple en c: [signed_module.c](url). Se eligió hacer uso de make para compilar `signed_module.c`. 
+
+Una vez que se dispone del código del módulo del kernel, debemos proceder a firmar el mismo:
+
+**1. Generación de claves**
+
+Para crear las claves haremos uso de open ssl y correremos el siguiente comando:
+
+```bash
+openssl req -new -x509 -newkey rsa:2048 -keyout sign_key.priv \
+    -outform DER -out sign_key.x509 -nodes -days 36500 \
+    -subj "/CN=Firma de mi modulo del kernel/"
+```
+
+Esto va a crear 2 archivos:
+
+* `sign_key.priv`: Clave privada
+* `sign_key.x509`: Certificado público
+
+**2. Configuración del sistema para usar estas claves**
+
+Se debe copiar las claves a la carpeta de certificados del kernel para que sean reconocidas:
+
+```bash
+sudo cp sign_key.x509 /var/lib/shim-signed/mok/MOK.der
+```
+Luego registrámos la clave con MOK (Machine Owner Key), se solicita una contraseña temporal:
+```bash
+sudo mokutil --import sign_key.x509
+```
+
+![Figura 24](imagenes/Figura24.png)
+
+Luego de registrar la clave, hay que reiniciar el sistema y seguir las instrucciones del asistente para inscribir la clave con MOK como vemos a continuación:
+
+![Figura 25](imagenes/Figura25.jpg)
+![Figura 26](imagenes/Figura26.jpg)
+![Figura 27](imagenes/Figura27.jpg)
+
+**3. Firma del módulo**
+
+Al reiniciar el sistema, se firma el modulo de la siguiente manera:
+```bash
+/usr/src/linux-headers-$(uname -r)/scripts/sign-file sha256 sign_key.priv sign_key.x509 signed_module.ko
+```
+
+Y se puede verificar dicha firma corriendo lo siguiente:
+
+```bash
+modinfo signed_module.ko | grep signer
+```
+
+![Figura 28](imagenes/Figura28.png)
+
+
+**4. Carga y descarga del módulo**
+
+Para corroborar y poder realizar la experiencia de manera correcta, primero comprobamos el estado de Secure Boot:
+
+```bash
+mokutil --sb-state
+```
+
+Al corroborar que Secure Boot está activado, insertamos el módulo:
+
+```bash
+sudo insmod signed_module.ko
+```
+
+Podemos verificar su inserción en los logs:
+```bash
+dmesg | tail
+```
+
+![Figura 29](imagenes/Figura29.png)
+
+Como podemos apreciar en la imagen, vemos que el módulo ha sido insertado correctamente.
+
+
+Una vez cargado, procedemos a descargar dicho módulo:
+
+```bash
+sudo rmmod signed_module
+dmesg | tail
+```
+
+![Figura 30](imagenes/Figura30.png)
+
+Y vemos que la descarga del modulo del kernel se efectúa con éxito:
+
+
+### _¿Que pasa si mi compañero con secure boot habilitado intenta cargar un módulo firmado por mi?_
+
+Cuando una computadora intente cargar un módulo firmado por otra computadora, el sistema rechazará dicho módulo
+
+Esto sucede, porque el módulo está firmado con una clave en nuestro sistema UEFI y el sistema UEFI del compañero no reconoce ni confía en dicha clave. Secure Boot solo permite cargar:
+
+1. Módulos **firmados por el proveedor del kernel** (por ejemplo, Canonical en Ubuntu, Red Hat, etc.)
+2. Módulos **firmados por claves que estén registradas en el firmware UEFI o el MOK (Machine Owner Key)**
+
+De esta manera cuando el compañero intente:
+
+```bash
+sudo insmod signed_module.ko
+```
+
+va a obtener:
+
+```
+insmod: ERROR: could not insert module signed_module.ko: Key was rejected by service
+```
+
+### _Problema con dual-boot luego de actualización de Microsoft_
+1. **¿Cuál fue la consecuencia principal del parche de Microsoft sobre GRUB en sistemas con arranque dual (Linux y Windows)?**
+
+El parche de Microsoft, modificó los certificados válidos en el sector de arranque UEFI para reforzar la seguridad del Secure Boot. Sin embargo, esta actualización provocó que versiones antiguas de **GRUB** (específicamente aquellas con certificados vencidos o sin soporte para **SBAT** (*Secure Boot Advanced Targeting*)) no pudieran iniciar correctamente en sistemas con arranque dual (Linux y Windows).  
+
+Como consecuencia los usuarios recibieron el error "Security Policy Violation" al intentar arrancar Linux, ya que el **`shim`** (componente intermedio entre el firmware UEFI y GRUB) no superó la verificación de seguridad. Distribuciones como Ubuntu (y otras basadas en versiones anteriores de GRUB) quedaron inaccesibles en sistemas con Secure Boot activado.  
+
+2. **¿Qué implicancia tiene desactivar Secure Boot como solución al problema descrito en el artículo?**
+
+Desactivar Secure Boot permite que los usuarios afectados por la actualización de Microsoft puedan volver a arrancar su sistema Linux, evitando el error "Security Policy Violation" causado por la verificación fallida del `shim` mediante SBAT.
+
+Esto implica:
+
+* Es una solución temporal y funcional para recuperar el acceso a Linux tras el fallo introducido por la actualización de Microsoft.
+* El artículo menciona que dependiendo de las necesidades de seguridad del usuario, esta opción puede no ser aceptable, ya que implica renunciar a parte de la protección que ofrece Secure Boot.
+* Se ofrece también una alternativa más segura que consta de desactivar Secure Boot temporalmente para eliminar la política SBAT con `mokutil`, y luego volver a activarlo.
+
+
+3. **¿Cuál es el propósito principal del Secure Boot en el proceso de arranque de un sistema?**
+
+
+El **Secure Boot** es un mecanismo de seguridad implementado en el firmware UEFI que garantiza que solo se ejecuten componentes de arranque firmados y verificados. 
+
+Su función principal es evitar la carga de código malicioso, ya que bloquea cargadores de arranque, kernels o controladores que no estén firmados con certificados válidos registrados en la base de datos de claves UEFI. Además, garantiza la integridad, debido a que los sistemas operativos (como Windows o Linux) pueden exigir Secure Boot activado para cumplir con estándares de seguridad.  
+
+---
+
+# Conclusión
+
+Durante este trabajo se exploraron aspectos fundamentales del desarrollo e integración de módulos en el núcleo de Linux, profundizando en la interacción entre el espacio de usuario y el espacio del kernel, así como en los mecanismos de seguridad que introduce Secure Boot.
+
+A través del desarrollo del trabajo se comprendió:
+
+* La diferencia entre el espacio del usuario (donde se ejecutan aplicaciones comunes) y el espacio del kernel (donde residen controladores, planificadores, y lógica de bajo nivel).
+* La utilidad de herramientas como `checkinstall`, que permiten empaquetar e instalar software (como módulos) de forma controlada y reversible mediante paquetes `.deb`, en lugar de usar `make install`.
+* Cómo un módulo actúa como una extensión cargable del kernel, con acceso directo al espacio de datos del kernel y funciones como `printk()` para loguear mensajes.
+
+Además, gracias a la experiencia de firmr un modulo del kernel nos sirvio para profundiza sobre la necesidad de firmar los módulos para su aceptación por parte del kernel en sistemas con Secure Boot, así como el uso de herramientas como `sign-file` y `mokutil` para registrar claves públicas en el sistema UEFI (MOK).
+
+Este trabajo no solo permitió abordar la parte técnica de compilar y cargar módulos, sino también aspectos de seguridad, interoperabilidad entre equipos, y los mecanismos que Linux provee para gestionar extensiones del kernel en forma segura y flexible.
+
+
+# Referencias
+- [1] https://askubuntu.com/questions/770205/how-to-sign-kernel-modules-with-sign-file
+- [2] https://arstechnica.com/security/2024/08/a-patch-microsoft-spent-2-years-preparing-is-making-a-mess-for-some-linux-users/
