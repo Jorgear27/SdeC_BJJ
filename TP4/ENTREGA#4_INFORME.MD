@@ -334,6 +334,193 @@ Cada campo en la salida tiene un significado específico:
 
 `E`: Señala que el módulo está en un estado de error.
 
+Para gestionar los módulos del kernel en Linux, se pueden cargar, inspeccionar y eliminar según sea necesario. En este caso, se utilizó el comando `rmmod` para eliminar un módulo previamente cargado.
 
+![Figura 11](imagenes/Figura11.jpeg)
 
+Este comando instruye al sistema para descargar el módulo del kernel, eliminando sus funciones y liberando la memoria que ocupaba. Como los módulos afectan directamente al sistema, el uso de `sudo` es esencial para tener permisos administrativos en la operación.
 
+Después de ejecutar `rmmod`, se comprobaron los módulos activos con:
+
+![Figura 12](imagenes/Figura12.jpeg)
+
+Ambos comandos no devolvieron resultados, lo que confirma que `mimodulo` ya no está presente en el sistema.
+
+Aunque `mimodulo` ha sido eliminado, aún es posible consultar sus detalles en el archivo `.ko` con:
+
+![Figura 13](imagenes/Figura13.jpeg)
+
+Cada campo de salida significa:
+
+* `filename`: el nombre del archivo del módulo del kernel.
+* `author`: el autor del módulo del kernel.
+* `description`: Esta es una breve descripción del módulo del kernel.
+* `license`: Esta es la licencia bajo la cual se distribuye el módulo del kernel.
+* `srcversion`: la versión del código fuente del módulo del kernel.
+* `depends`: Esta es una lista de otros módulos del kernel de los que dependen de este módulo.
+* `retpoline`: Este campo indica si el módulo del kernel está compilado con protecciones Retpoline para mitigar la vulnerabilidad de ejecución especulativa del procesador.
+* `name`: el nombre del módulo del kernel.
+* `vermagic`: cadena que contiene la versión del kernel, el tipo de CPU, el estado de SMP (Symmetric MultiProcessing), y otras opciones que deben coincidir exactamente con el kernel en ejecución para que el módulo pueda ser cargado.
+
+Luego, al ejecutar el comando `modinfo /lib/modules/$(uname -r)/kernel/crypto/des_generic.ko`
+se obtiene:
+
+![Figura 14](imagenes/Figura14.jpeg)
+
+El comando `modinfo` permite obtener información detallada sobre un módulo del kernel antes de su carga, mostrando atributos clave como su licencia, dependencias y seguridad.
+
+Cada campo de la salida quiere decir: 
+
+* `filename`: el nombre del archivo del módulo del kernel.
+* `alias`: los alias del módulo del kernel. Los alias son nombres alternativos que se pueden usar para referirse al módulo.
+* `author`: Este es el autor del módulo del kernel.
+* `description`: Esta es una breve descripción del módulo del kernel. 
+* `license`: Esta es la licencia bajo la cual se distribuye el módulo del kernel.
+* `srcversion`: Esta es la versión del código fuente del módulo del kernel.
+* `depends`: Esta es una lista de otros módulos del kernel de los que dependen de este módulo.
+* `retpoline`: Este campo indica si el módulo del kernel está compilado con protecciones Retpoline para mitigar la vulnerabilidad de ejecución especulativa del procesador.
+* `intree`: Este campo indica si el módulo del kernel está incluido en el árbol de código fuente del kernel. 
+* `name`: Este es el nombre del módulo del kernel.
+* `vermagic`: Esta es una cadena que contiene la versión del kernel, el tipo de CPU, el estado de SMP (Symmetric MultiProcessing), y otras opciones que deben coincidir exactamente con el kernel en ejecución para que el módulo pueda ser cargado.
+* `sig_id`: Este campo indica el tipo de firma digital utilizada para firmar el módulo del kernel.
+* `signer`: Este campo indica la entidad que registró el módulo del kernel.
+* `sig_key`: Esta es la clave pública utilizada para verificar la firma digital del módulo del kernel.
+* `sig_hashalgo`: Este campo indica el algoritmo de hash utilizado para generar la firma digital del módulo del kernel.
+* `signature`: Esta es la firma digital del módulo del kernel.
+
+Estos datos permiten verificar la autenticidad, compatibilidad y requerimientos de un módulo antes de su ejecución. Además, facilitan la identificación de dependencias y posibles problemas de seguridad, como la falta de firmas válidas
+
+### _¿Qué diferencias se pueden observar entre los dos modinfo?_
+
+El comando `modinfo` permite obtener información detallada sobre los módulos del kernel, mostrando atributos clave como la licencia, el autor, las dependencias y detalles de seguridad. Al ejecutarlo sobre dos módulos distintos, `mimodulo.ko` y `des_generic.ko`, se identifican diferencias notables entre ambos.
+
+Una de las principales diferencias radica en la naturaleza de cada módulo. Mientras que `mimodulo.ko` es un módulo personalizado, desarrollado e insertado manualmente en el sistema, `des_generic.ko` es un módulo estándar incluido en el árbol de código fuente del kernel y almacenado en la ruta `/lib/modules/$(uname -r)/kernel/crypto/`. Esto significa que `des_generic.ko` forma parte de las funcionalidades predefinidas del sistema, mientras que `mimodulo.ko` se incorporó de manera independiente.
+
+Además, la información proporcionada por `modinfo` es diferente para cada módulo debido a sus distintas propiedades. En `mimodulo.ko`, el autor, la descripción, la versión del código fuente y la firma digital son propias del módulo desarrollado, mientras que `des_generic.ko` cuenta con especificaciones establecidas por la distribución del kernel. Otra diferencia significativa es la presencia de dependencias: `mimodulo.ko` no depende de otros módulos, mientras que `des_generic.ko` requiere `libdes` para su correcto funcionamiento dentro del sistema.
+
+Otro aspecto diferenciador es la asignación de alias dentro del kernel. `mimodulo.ko` no posee alias registrados, mientras que `des_generic.ko` cuenta con varios alias, lo que facilita su identificación bajo distintos nombres. Asimismo, en términos de seguridad, `des_generic.ko` tiene una firma digital validada, mientras que `mimodulo.ko` no cuenta con una firma certificada, lo que puede generar advertencias al intentar cargarlo en el kernel.
+
+En resumen, la ejecución de `modinfo` sobre distintos módulos del kernel permite analizar sus diferencias en origen, estructura, dependencias y seguridad. Mientras que un módulo personalizado como `mimodulo.ko` requiere gestión manual y no cuenta con validaciones propias del kernel, un módulo estándar como `des_generic.ko` está optimizado para su integración dentro del sistema y proporciona mayores garantías de seguridad y compatibilidad.
+
+### _¿Qué controladores/módulos están cargados en su propia PC?_
+
+Para analizar las diferencias en los módulos del kernel cargados en distintos sistemas, se utilizó el comando `lsmod`, el cual muestra todos los módulos activos en un momento determinado. Los resultados fueron almacenados en archivos de texto dentro de la carpeta `ModulosIntegrantes`, permitiendo comparar las salidas de distintos usuarios.
+
+Para realizar esta comparación, se ejecutaron los siguientes comandos en la terminal:
+
+![Figura 15](imagenes/Figura15.jpeg)
+
+Estos comandos generan archivos de diferencias, en los cuales:
+
+* Las líneas que comienzan con `<` representan módulos que están en el primer archivo pero no en el segundo.
+
+* Las líneas que comienzan con `>` corresponden a módulos presentes en el segundo archivo pero ausentes en el primero.
+
+El análisis de los módulos del kernel mediante herramientas como `lsmod` y `diff` permite identificar variaciones en la configuración de los sistemas Linux. Estas diferencias pueden deberse a múltiples factores, como el hardware instalado, las necesidades de los usuarios, las configuraciones de software y las distribuciones específicas utilizadas.
+
+Cada sistema carga un conjunto particular de módulos que proporcionan soporte para dispositivos, comunicación en red, administración de energía y compatibilidad con distintos tipos de hardware. Algunos módulos son comunes entre diferentes equipos, lo que sugiere una base estándar en las configuraciones del kernel, mientras que otros varían, reflejando personalizaciones o requerimientos específicos de cada entorno.
+
+La comparación de estas configuraciones es útil para detectar módulos innecesarios, optimizar el rendimiento del sistema y garantizar la seguridad del kernel. Además, permite comprender cómo las distintas distribuciones o versiones del sistema operativo gestionan los controladores y extensiones del kernel, facilitando el mantenimiento y la personalización de la infraestructura tecnológica.
+
+### _¿Cuáles no están cargados pero están disponibles? ¿Qué pasa cuando el controlador de un dispositivo no está disponible?_
+
+Para analizar los módulos disponibles y cargados en el sistema Linux, se pueden utilizar herramientas como `lsmod` y `ls -R /lib/modules/$(uname -r)`, que permiten inspeccionar el estado del kernel y sus componentes.
+
+* **Listado de módulos disponibles:** Este comando muestra todos los módulos que están instalados en el sistema, es decir, aquellos que pueden ser cargados si se necesitan.
+
+![Figura 16](imagenes/Figura16.jpeg)
+
+* **Listado de módulos actualmente cargados:** Este comando muestra los módulos activos, es decir, los que están en uso en el kernel.
+
+![Figura 17](imagenes/Figura17.jpeg)
+
+Para facilitar la identificación de los módulos que están disponibles pero no cargados, se desarrolló un script en Bash llamado `scriptPreguntaCargNoDisp.sh`. Este script compara los módulos instalados en el sistema con aquellos realmente en uso, permitiendo detectar cuáles están presentes pero no han sido activados en el kernel.
+
+La ejecución de este script genera una lista extensa de módulos disponibles pero no cargados, lo que puede ser útil para evaluar posibles controladores faltantes o módulos que podrían optimizar el funcionamiento del sistema.
+
+Cuando un módulo del kernel no está cargado, el sistema podría experimentar inconvenientes relacionados con el hardware. Algunas de las posibles consecuencias incluyen:
+
+**1. Dispositivos no reconocidos:** Si un controlador específico no está activo, ciertos periféricos como tarjetas de red, discos o teclados pueden no funcionar correctamente.
+
+**2. Reducción del rendimiento:** Algunos módulos optimizan la comunicación con el hardware; si no están cargados, la eficiencia del sistema puede verse afectada.
+
+**3. Fallos en la conectividad:** La ausencia de controladores de red podría impedir conexiones WiFi, Ethernet o Bluetooth.
+
+**4. Errores en el sistema de archivos:** La falta de módulos de compatibilidad puede hacer que ciertos sistemas de archivos no sean accesibles.
+
+### _hwinfo_
+
+La herramienta `hwinfo` permite obtener un análisis detallado de los componentes físicos de un sistema. Su ejecución proporciona una visión completa del hardware disponible, facilitando tareas como diagnóstico, soporte técnico y optimización del rendimiento del sistema.
+
+Para utilizar `hwinfo`, primero se instala con el siguiente comando:
+
+![Figura 18](imagenes/Figura18.jpeg)
+
+Como la salida generada es extensa, se almacena en un archivo de texto para su revisión detallada:
+
+![Figura 19](imagenes/Figura19.jpeg)
+
+Este archivo contiene información sobre los diferentes componentes del sistema, incluyendo CPU, RAM, tarjetas gráficas, almacenamiento, periféricos y controladores USB. Para cumplir con la consigna, el archivo generado se ha subido a un almacenamiento en la nube, permitiendo su acceso según lo solicitado en el reporte: 
+
+Además de su uso básico, `hwinfo` ofrece opciones para filtrar la información y generar reportes en distintos formatos, como texto, CSV o XML, lo que facilita su integración con herramientas de análisis y monitoreo de hardware.
+
+Como conclusión, la herramienta `hwinfo` es fundamental para obtener detalles del hardware en sistemas Linux, proporcionando información precisa y organizada sobre todos los dispositivos conectados. Su capacidad de generar reportes facilita la administración y mantenimiento de equipos, siendo una herramienta esencial para técnicos y administradores de sistemas.
+
+### _¿Qué diferencia existe entre un módulo y un programa?_
+
+Las diferencias que podemos notar son las siguiente:
+
+**1. Función:** Un programa es una aplicación que se ejecuta en el sistema operativo para realizar una tarea específica, como procesar texto o navegar por la web. Por otro lado, un módulo es un componente de software que realiza una función específica dentro de un sistema mayor. Por ejemplo, un driver es un tipo de módulo que permite que el sistema operativo se comunique con un dispositivo de hardware.
+**2. Interacción con el sistema operativo:** Los programas invocan funciones específicas del sistema operativo para realizar sus tareas. En cambio, los módulos, como los drivers, son invocados por el sistema operativo para interactuar con el hardware.
+**3. Ubicación en el sistema:** Los programas suelen estar almacenados en el disco duro y se cargan en la memoria cuando se ejecutan. Los módulos, por otro lado, pueden ser cargados y descargados dinámicamente en el sistema, de manera que solo están activos en memoria cuando se les necesita. 
+**4. Reutilización de código:** En la programación modular, los módulos permiten reutilizar código y compartir funciones entre programas. En cambio, aunque un programa puede contener funciones reutilizables, es una entidad independiente que se ejecuta para realizar una tarea específica.
+
+### _¿Cómo puede ver una lista de las llamadas al sistema que realiza un simple helloworld en c?_
+
+Para examinar las llamadas al sistema realizadas por un programa en Linux, se utilizó la herramienta `strace`, que permite rastrear la interacción del código con el kernel.
+
+El proceso comenzó con la creación del archivo fuente `HelloWorld.c`, que contiene una instrucción simple en C para imprimir `"hello world"` en pantalla. Luego, el programa se compiló con el siguiente comando:
+
+![Figura 20](imagenes/Figura20.jpeg)
+
+Este comando genera el ejecutable `hello`, que posteriormente se ejecutó utilizando `strace`:
+
+![Figura 21](imagenes/Figura21.jpeg)
+
+La salida obtenida muestra una serie de llamadas al sistema realizadas por el programa durante su ejecución. Debido a la gran cantidad de información generada, el resultado se almacenó en un archivo para su mejor análisis:
+
+![Figura 22](imagenes/Figura22.jpeg)
+
+En este archivo, cada línea corresponde a una llamada al sistema realizada por el programa. Entre estas llamadas, se destacan aquellas que gestionan la entrada y salida de datos, la asignación de memoria y la interacción con archivos.
+
+Al analizar el contenido del archivo `SyscallsHello.txt`, se observa que en una de las últimas líneas se encuentra la siguiente instrucción:
+
+![Figura 23](imagenes/Figura23.jpeg)
+
+Este registro refleja la llamada al sistema `write()`, que se encarga de escribir en la salida estándar (**descriptor de archivo** `1`, que representa la terminal). La ejecución de esta instrucción corresponde a la acción del `printf("hello world")` en el código C original, demostrando cómo una función de alto nivel en C se traduce en una operación interna del sistema.
+
+### _¿Qué es un segmentation fault? ¿Cómo lo maneja el kernel y cómo lo hace un programa?_
+
+Una violación de segmentación **(segmentation fault)** ocurre cuando un programa intenta acceder a una dirección de memoria no permitida por el sistema operativo. Esto sucede cuando el acceso se realiza fuera de los límites asignados, generando un error crítico que interrumpe la ejecución del programa.
+
+Entre las causas más comunes de este problema se encuentran:
+
+* Uso incorrecto de los operadores `&` (dirección) y `*` (indirección).
+
+* Errores en cadenas de formato en funciones como `printf` y `scanf`.
+
+* Olvidar utilizar `&` en los argumentos de `scanf`.
+
+* Intentar acceder más allá de los límites de una matriz o vector.
+
+* No inicializar un puntero antes de utilizarlo.
+
+* Acceder de manera incorrecta a un área de memoria válida para el programa.
+
+* Referenciar un objeto o variable que ha sido eliminado de la memoria.
+
+Cuando ocurre un `segmentation fault`, el sistema operativo recibe una interrupción de hardware. El kernel analiza la causa del error y determina si puede manejarlo o simplemente notificarlo a la aplicación. En situaciones como la referencia a punteros nulos, el kernel solo puede informar que ha ocurrido un problema, deteniendo el programa afectado.
+
+Desde la _perspectiva del programa_, un `segmentation fault` generalmente resulta en una interrupción inmediata de la ejecución, generando un informe de error. Para identificar la causa del fallo, los desarrolladores pueden utilizar herramientas de depuración como `gdb`, que permiten examinar el estado del programa al momento del error y detectar las líneas de código responsables.
+
+En conclusión, las violaciones de segmentación son errores críticos que afectan la estabilidad de los programas y pueden ser causadas por accesos incorrectos a la memoria. Comprender cómo el kernel maneja estos errores y cómo los desarrolladores pueden depurarlos es clave para mejorar la estabilidad y seguridad del software.
