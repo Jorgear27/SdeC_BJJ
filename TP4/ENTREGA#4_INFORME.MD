@@ -531,7 +531,7 @@ En conclusión, las violaciones de segmentación son errores críticos que afect
 
 Ahora se va a realizar el proceso de firma de módulos del kernel en Linux, y su posterior carga y descarga en un sistema con Secure Boot habilitado, garantizando su legitimidad mediante claves criptográficas. 
 
-En primer lugar se diseño un módulo simple en c: [signed_module.c](url). Se eligió hacer uso de make para compilar `signed_module.c`. 
+En primer lugar se diseño un módulo simple en c: [signed_module.c](https://github.com/Jorgear27/SdeC_BJJ/blob/main/TP4/firma-modulo-kernel/signed_module.c). Se eligió hacer uso de make para compilar `signed_module.c`. 
 
 Una vez que se dispone del código del módulo del kernel, debemos proceder a firmar el mismo:
 
@@ -566,9 +566,9 @@ sudo mokutil --import sign_key.x509
 
 Luego de registrar la clave, hay que reiniciar el sistema y seguir las instrucciones del asistente para inscribir la clave con MOK como vemos a continuación:
 
-![Figura 25](imagenes/Figura25.jpg)
-![Figura 26](imagenes/Figura26.jpg)
-![Figura 27](imagenes/Figura27.jpg)
+![Figura 25](imagenes/Figura25.jpeg)
+![Figura 26](imagenes/Figura26.jpeg)
+![Figura 27](imagenes/Figura27.jpeg)
 
 **3. Firma del módulo**
 
