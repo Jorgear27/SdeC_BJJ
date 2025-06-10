@@ -483,7 +483,7 @@ Para examinar las llamadas al sistema realizadas por un programa en Linux, se ut
 
 El proceso comenzó con la creación del archivo fuente `HelloWorld.c`, que contiene una instrucción simple en C para imprimir `"hello world"` en pantalla. Luego, el programa se compiló con el siguiente comando:
 
-![Figura 20](imagenes/Figura20.jpeg)
+![Figura 20](imagenes/Figura20.jpg)
 
 Este comando genera el ejecutable `hello`, que posteriormente se ejecutó utilizando `strace`:
 
@@ -497,7 +497,7 @@ En este archivo, cada línea corresponde a una llamada al sistema realizada por 
 
 Al analizar el contenido, se observa que en una de las últimas líneas se encuentra la siguiente instrucción:
 
-![Figura 23](imagenes/Figura23.jpeg)
+![Figura 23](imagenes/Figura23.jpg)
 
 Este registro refleja la llamada al sistema `write()`, que se encarga de escribir en la salida estándar (**descriptor de archivo** `1`, que representa la terminal). La ejecución de esta instrucción corresponde a la acción del `printf("hello world")` en el código C original, demostrando cómo una función de alto nivel en C se traduce en una operación interna del sistema.
 
