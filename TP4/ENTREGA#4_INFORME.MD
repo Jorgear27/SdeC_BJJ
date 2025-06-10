@@ -483,11 +483,11 @@ Para examinar las llamadas al sistema realizadas por un programa en Linux, se ut
 
 El proceso comenzó con la creación del archivo fuente `HelloWorld.c`, que contiene una instrucción simple en C para imprimir `"hello world"` en pantalla. Luego, el programa se compiló con el siguiente comando:
 
-![Figura 20](imagenes/Figura20.jpg)
+![Figura 20](imagenes/Figura20.jpeg)
 
 Este comando genera el ejecutable `hello`, que posteriormente se ejecutó utilizando `strace`:
 
-![Figura 21](imagenes/Figura21.jpeg)
+![Figura 21](imagenes/Figura21.jpe)
 
 La salida obtenida muestra una serie de llamadas al sistema realizadas por el programa durante su ejecución:
 
