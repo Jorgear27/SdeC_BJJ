@@ -308,7 +308,7 @@ Aquí, la información proporcionada indica:
 
 * `mimodulo`: Nombre del módulo cargado en el kernel.
 
-* `16384`: Tamaño del módulo en bytes.
+* `12288`: Tamaño del módulo en bytes.
 
 * `0`: Cantidad de dependencias; en este caso, ningún otro módulo depende de `mimodulo`.
 
@@ -322,7 +322,7 @@ Cada campo en la salida tiene un significado específico:
 
 * `mimodulo`: Nombre del módulo cargado.
 
-* `16384`: Tamaño del módulo en bytes.
+* `12288`: Tamaño del módulo en bytes.
 
 * `0`: Número de instancias activas (0 significa que está cargado pero no en uso).
 
