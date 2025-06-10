@@ -462,7 +462,7 @@ Como la salida generada es extensa, se almacena en un archivo de texto para su r
 
 ![Figura 19](imagenes/Figura19.jpeg)
 
-Este archivo contiene información sobre los diferentes componentes del sistema, incluyendo CPU, RAM, tarjetas gráficas, almacenamiento, periféricos y controladores USB. Para cumplir con la consigna, el archivo generado se ha subido a un almacenamiento en la nube, permitiendo su acceso según lo solicitado en el reporte: 
+Este archivo contiene información sobre los diferentes componentes del sistema, incluyendo CPU, RAM, tarjetas gráficas, almacenamiento, periféricos y controladores USB. Para cumplir con la consigna, el archivo generado se ha subido a un almacenamiento en la nube, permitiendo su acceso según lo solicitado en el reporte: [hwinfo](https://drive.google.com/file/d/1OBzrPYPXUlJL9cEUzYK0t1ce7yK7K8Jv/view)
 
 Además de su uso básico, `hwinfo` ofrece opciones para filtrar la información y generar reportes en distintos formatos, como texto, CSV o XML, lo que facilita su integración con herramientas de análisis y monitoreo de hardware.
 
@@ -489,13 +489,13 @@ Este comando genera el ejecutable `hello`, que posteriormente se ejecutó utiliz
 
 ![Figura 21](imagenes/Figura21.jpeg)
 
-La salida obtenida muestra una serie de llamadas al sistema realizadas por el programa durante su ejecución. Debido a la gran cantidad de información generada, el resultado se almacenó en un archivo para su mejor análisis:
+La salida obtenida muestra una serie de llamadas al sistema realizadas por el programa durante su ejecución:
 
 ![Figura 22](imagenes/Figura22.jpeg)
 
 En este archivo, cada línea corresponde a una llamada al sistema realizada por el programa. Entre estas llamadas, se destacan aquellas que gestionan la entrada y salida de datos, la asignación de memoria y la interacción con archivos.
 
-Al analizar el contenido del archivo `SyscallsHello.txt`, se observa que en una de las últimas líneas se encuentra la siguiente instrucción:
+Al analizar el contenido, se observa que en una de las últimas líneas se encuentra la siguiente instrucción:
 
 ![Figura 23](imagenes/Figura23.jpeg)
 
