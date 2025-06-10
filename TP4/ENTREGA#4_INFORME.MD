@@ -487,7 +487,7 @@ El proceso comenzó con la creación del archivo fuente `HelloWorld.c`, que cont
 
 Este comando genera el ejecutable `hello`, que posteriormente se ejecutó utilizando `strace`:
 
-![Figura 21](imagenes/Figura21.jpe)
+![Figura 21](imagenes/Figura21.jpg)
 
 La salida obtenida muestra una serie de llamadas al sistema realizadas por el programa durante su ejecución:
 
