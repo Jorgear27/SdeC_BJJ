@@ -367,7 +367,7 @@ Cada campo de salida significa:
 Luego, al ejecutar el comando `modinfo /lib/modules/$(uname -r)/kernel/crypto/des_generic.ko`
 se obtiene:
 
-![Figura 14](imagenes/Figura14.jpeg)
+![Figura 14](imagenes/Figura14.png)
 
 El comando `modinfo` permite obtener información detallada sobre un módulo del kernel antes de su carga, mostrando atributos clave como su licencia, dependencias y seguridad.
 
